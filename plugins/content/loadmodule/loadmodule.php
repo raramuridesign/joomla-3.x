@@ -234,13 +234,13 @@ class PlgContentLoadmodule extends JPlugin
 		self::$modules[$id] = '';
 		$document = JFactory::getDocument();
 		$renderer = $document->loadRenderer('module');
-		$modules  = JModuleHelper::getModuleById($id);
-		$params   = array('style' => 'none');
+		$module = JModuleHelper::getModuleById($id);
+		$params = array('style' => 'none');
 		ob_start();
 
-		if ($modules->id > 0)
+		if ($module)
 		{
-			echo $renderer->render($modules, $params);
+			echo $renderer->render($module, $params);
 		}
 
 		self::$modules[$id] = ob_get_clean();

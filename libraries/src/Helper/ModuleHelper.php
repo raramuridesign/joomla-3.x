@@ -62,7 +62,6 @@ abstract class ModuleHelper
 			$result->position  = '';
 			$result->content   = '';
 			$result->showtitle = 0;
-			$result->control   = '';
 			$result->params    = '';
 		}
 
@@ -674,33 +673,18 @@ abstract class ModuleHelper
 	 *
 	 * @since   3.9.0
 	 */
-	public static function &getModuleById($id)
+	public static function getModuleById($id)
 	{
-		$modules =& static::load();
+		$db    = \JFactory::getDbo();
+		$query = $db->getQuery(true)
+			->select('m.id, m.title, m.module, m.position, m.content, m.showtitle, m.params')
+			->from($db->quoteName('#__modules', 'm'))
+			->join('LEFT', $db->quoteName('#__extensions', 'e') . ' ON e.element = m.module AND e.client_id = m.client_id')
+			->where('m.id = ' . (int) $id)
+			->where('m.published = 1')
+			->where('e.enabled = 1');
+		$db->setQuery($query);
 
-		$total = count($modules);
-
-		for ($i = 0; $i < $total; $i++)
-		{
-			// Match the id of the module
-			if ((string) $modules[$i]->id === $id)
-			{
-				// Found it
-				return $modules[$i];
-			}
-		}
-
-		// If we didn't find it, create a dummy object
-		$result            = new \stdClass;
-		$result->id        = 0;
-		$result->title     = '';
-		$result->module    = '';
-		$result->position  = '';
-		$result->content   = '';
-		$result->showtitle = 0;
-		$result->control   = '';
-		$result->params    = '';
-
-		return $result;
+		return $db->loadObject();
 	}
 }
