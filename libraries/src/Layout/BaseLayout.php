@@ -296,7 +296,7 @@ class BaseLayout implements LayoutInterface
 	 */
 	public function setDebug($debug)
 	{
-		$this->options->set('debug', (boolean) $debug);
+		$this->options->set('debug', (bool) $debug);
 
 		return $this;
 	}

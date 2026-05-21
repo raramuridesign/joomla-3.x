@@ -146,7 +146,7 @@ class Date extends \DateTime
 				break;
 
 			case 'isleapyear':
-				$value = (boolean) $this->format('L', true);
+				$value = (bool) $this->format('L', true);
 				break;
 
 			case 'day':

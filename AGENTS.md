@@ -41,6 +41,8 @@ The following fixes are already in the codebase. Do not duplicate them:
 - CVE-2026-21631 (com_associations edit.php data-title escaping)
 - All `#[\AllowDynamicProperties]` additions (Table, CMSObject, idna_convert)
 - All remaining implicit-nullable fixes in fof/, vendor/joomla/session, vendor/joomla/data, vendor/joomla/di, vendor/google/recaptcha, vendor/symfony/yaml, vendor/joomla/filesystem, plugins/privacy/*
+- All `(boolean)` → `(bool)` casts (libraries/src/ and libraries/joomla/, 13 files)
+- `Uri::getInstance()` null guard (null → 'SERVER' coercion)
 
 ### Update server
 
@@ -610,6 +612,16 @@ Three bugs discovered after the 3.12.0 release was published, fixed before the n
 - **Root cause:** When bumping from 3.11 to 3.12, `MINOR_VERSION` was not updated. Since `JVERSION` is computed as `MAJOR_VERSION . '.' . MINOR_VERSION . '.' . PATCH_VERSION` (via `getShortVersion()` in `libraries/cms.php`), the constant `JVERSION` evaluated to `'3.11.0'` instead of `'3.12.0'`. The deprecated `RELEASE` constant was correctly set to `'3.12'`, but nothing used it for the version constant.
 - **Impact:** After upgrading to 3.12, the site would still report `JVERSION = '3.11.0'`. The `com_joomlaupdate` "hasUpdate" check (`version_compare($latest, JVERSION, '>')`) would then evaluate `version_compare('3.12.0', '3.11.0', '>') = true` — meaning the update notification would reappear on every check even after a successful upgrade.
 - **Fix:** `MINOR_VERSION` changed from `11` to `12`.
+
+### B-4 — PHP 8.5: `(boolean)` cast deprecated
+- **Files:** `libraries/src/Date/Date.php`, `libraries/src/Helper/TagsHelper.php`, `libraries/src/Table/ContentHistory.php`, `libraries/src/Table/Table.php`, `libraries/src/Log/Logger/FormattedtextLogger.php`, `libraries/src/Language/Text.php`, `libraries/src/Language/Associations.php`, `libraries/src/Layout/BaseLayout.php`, `libraries/src/Microdata/Microdata.php`, `libraries/src/Access/Rule.php`, `libraries/joomla/database/iterator.php`, `libraries/joomla/database/exporter.php`, `libraries/joomla/database/importer.php`
+- **Root cause:** PHP 8.5 deprecated the non-canonical `(boolean)` cast alias in favour of `(bool)`. 17 occurrences across 13 files. The first deprecation notice to appear (from `Date.php` during CLI bootstrap) contributes to the "headers already sent" cascade.
+- **Fix:** `sed -i 's/(boolean)/(bool)/g'` across all 13 files.
+
+### B-5 — PHP 8.5: `null` used as array offset in `Uri::getInstance()`
+- **File:** `libraries/src/Uri/Uri.php`
+- **Root cause:** `Uri::getInstance($uri)` uses `$uri` as a key in `static::$instances[$uri]`. In CLI context, callers such as `WebApplication` pass `$this->get('uri.request')` which returns `null` when the registry key is unset. PHP 8.5 deprecated using `null` as an array offset. The resulting deprecation notice is the first line of output in a CLI script, which triggers the fatal "headers already sent" session startup failure (same cascade as P-7/P-8).
+- **Fix:** Added `if ($uri === null) { $uri = 'SERVER'; }` guard at the top of `getInstance()`, before the array key is first used (line 59, 119, 122 in original). `'SERVER'` is the default value already used when no argument is passed, making this semantically correct.
 
 ### B-3 — Migration SQL used wrong column name `language_key` on `#__postinstall_messages`
 - **Files:** `administrator/components/com_admin/sql/updates/mysql/3.12.0-2026-05-21.sql`, `…/postgresql/…`, `…/sqlazure/…`

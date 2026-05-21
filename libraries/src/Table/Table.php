@@ -1303,7 +1303,7 @@ abstract class Table extends \JObject implements \JObservableInterface, \JTableI
 			->from($db->quoteName('#__session'))
 			->where($db->quoteName('userid') . ' = ' . (int) $against);
 		$db->setQuery($query);
-		$checkedOut = (boolean) $db->loadResult();
+		$checkedOut = (bool) $db->loadResult();
 
 		// If a session exists for the user then it is checked out.
 		return $checkedOut;

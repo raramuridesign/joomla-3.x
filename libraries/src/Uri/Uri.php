@@ -56,6 +56,11 @@ class Uri extends \Joomla\Uri\Uri
 	 */
 	public static function getInstance($uri = 'SERVER')
 	{
+		if ($uri === null)
+		{
+			$uri = 'SERVER';
+		}
+
 		if (empty(static::$instances[$uri]))
 		{
 			// Are we obtaining the URI from the server?

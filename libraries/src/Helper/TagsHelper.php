@@ -101,7 +101,7 @@ class TagsHelper extends CMSHelper
 
 		$db->setQuery($query);
 
-		return (boolean) $db->execute();
+		return (bool) $db->execute();
 	}
 
 	/**
@@ -1095,6 +1095,6 @@ class TagsHelper extends CMSHelper
 
 		$db->setQuery($query);
 
-		return (boolean) $db->execute();
+		return (bool) $db->execute();
 	}
 }

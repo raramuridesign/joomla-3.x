@@ -223,7 +223,7 @@ abstract class JDatabaseExporter
 	 */
 	public function withStructure($setting = true)
 	{
-		$this->options->withStructure = (boolean) $setting;
+		$this->options->withStructure = (bool) $setting;
 
 		return $this;
 	}

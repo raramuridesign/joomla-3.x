@@ -212,7 +212,7 @@ class ContentHistory extends Table
 				->where($db->quoteName('version_id') . ' NOT IN (' . implode(',', $idsToSave) . ')')
 				->where($db->quoteName('keep_forever') . ' != 1');
 			$db->setQuery($query);
-			$result = (boolean) $db->execute();
+			$result = (bool) $db->execute();
 		}
 
 		return $result;

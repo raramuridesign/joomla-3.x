@@ -20,6 +20,13 @@ In detail:
 - Removed all four items from the installation SQL files (MySQL, PostgreSQL, SQL Azure) so fresh installs do not register them
 - Added migration SQL (`administrator/components/com_admin/sql/updates/*/3.12.0-2026-05-21.sql`) that runs automatically on upgrade: reassigns any site using beez3/hathor as their global default template to protostar/isis, then deletes all related `#__extensions`, `#__template_styles`, and `#__postinstall_messages` records
 
+Post-release corrections (May 22, 2026):
+- Fixed `Version::MINOR_VERSION` constant which was incorrectly left at `11` instead of `12`, causing `JVERSION` to evaluate to `3.11.0` on 3.12 sites and the update notification to reappear after a successful upgrade
+- Fixed migration SQL error 1054: `#__postinstall_messages` DELETE used wrong column name `language_key` (does not exist); corrected to `title_key` in all three SQL variants (MySQL, PostgreSQL, SQL Azure)
+- Fixed update feed `docs/list.xml`: was in `<updates>` format but the core update site has `type='collection'`, so Joomla's `CollectionAdapter` silently ignored it entirely; rewrote as `<extensionset>` collection and added `docs/extension.xml` as the separate details file (mirrors `update.joomla.org` architecture)
+- Fixed PHP 8.5 deprecation in `Uri::getInstance()`: passing `null` as the `$uri` argument (from `$this->get('uri.request')` returning null in CLI context) used null as an array key — guarded with a `null → 'SERVER'` coercion
+- Fixed PHP 8.5 deprecation: replaced all 17 non-canonical `(boolean)` casts with `(bool)` across `libraries/src/` and `libraries/joomla/` (Date, Table, TagsHelper, ContentHistory, FormattedtextLogger, Text, Associations, BaseLayout, Microdata, Rule, database iterator/exporter/importer)
+
 ---
 
 ## Version 3.11 - released April 20th, 2026

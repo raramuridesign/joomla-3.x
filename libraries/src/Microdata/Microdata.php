@@ -91,7 +91,7 @@ class Microdata
 	 */
 	public function __construct($type = '', $flag = true)
 	{
-		if ($this->enabled = (boolean) $flag)
+		if ($this->enabled = (bool) $flag)
 		{
 			// Fallback to 'Thing' Type
 			if (!$type)
@@ -147,7 +147,7 @@ class Microdata
 	 */
 	public function enable($flag = true)
 	{
-		$this->enabled = (boolean) $flag;
+		$this->enabled = (bool) $flag;
 
 		return $this;
 	}

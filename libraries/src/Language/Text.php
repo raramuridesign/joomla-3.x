@@ -389,12 +389,12 @@ class Text
 		{
 			if (array_key_exists('interpretBackSlashes', $jsSafe))
 			{
-				$interpretBackSlashes = (boolean) $jsSafe['interpretBackSlashes'];
+				$interpretBackSlashes = (bool) $jsSafe['interpretBackSlashes'];
 			}
 
 			if (array_key_exists('jsSafe', $jsSafe))
 			{
-				$jsSafe = (boolean) $jsSafe['jsSafe'];
+				$jsSafe = (bool) $jsSafe['jsSafe'];
 			}
 			else
 			{

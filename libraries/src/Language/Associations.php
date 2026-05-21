@@ -161,7 +161,7 @@ class Associations
 				if (!empty($plugin))
 				{
 					$params = new Registry($plugin->params);
-					$enabled  = (boolean) $params->get('item_associations', true);
+					$enabled  = (bool) $params->get('item_associations', true);
 				}
 
 				$tested = true;

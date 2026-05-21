@@ -112,7 +112,7 @@ class FormattedtextLogger extends Logger
 		// Wait as long as possible before writing logs
 		if (!empty($this->options['defer']))
 		{
-			$this->defer = (boolean) $this->options['defer'];
+			$this->defer = (bool) $this->options['defer'];
 		}
 
 		// Build the fields array based on the format string.

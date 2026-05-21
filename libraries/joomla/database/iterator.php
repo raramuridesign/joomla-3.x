@@ -180,7 +180,7 @@ abstract class JDatabaseIterator implements Countable, Iterator
 	 */
 	public function valid()
 	{
-		return (boolean) $this->_current;
+		return (bool) $this->_current;
 	}
 
 	/**

@@ -96,7 +96,7 @@ class Rule
 	public function mergeIdentity($identity, $allow)
 	{
 		$identity = (int) $identity;
-		$allow = (int) ((boolean) $allow);
+		$allow = (int) ((bool) $allow);
 
 		// Check that the identity exists.
 		if (isset($this->data[$identity]))
@@ -146,7 +146,7 @@ class Rule
 				// Check if the identity is known.
 				if (isset($this->data[$identity]))
 				{
-					$result = (boolean) $this->data[$identity];
+					$result = (bool) $this->data[$identity];
 
 					// An explicit deny wins.
 					if ($result === false)
