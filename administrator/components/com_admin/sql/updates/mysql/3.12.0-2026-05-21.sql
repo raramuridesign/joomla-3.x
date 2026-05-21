@@ -23,7 +23,7 @@ DELETE FROM `#__extensions` WHERE `element` = 'beez3' AND `type` = 'template';
 DELETE FROM `#__extensions` WHERE `element` = 'hathor' AND `type` = 'template';
 
 -- Remove hathor post-install message
-DELETE FROM `#__postinstall_messages` WHERE `language_key` = 'TPL_HATHOR_MESSAGE_POSTINSTALL_TITLE';
+DELETE FROM `#__postinstall_messages` WHERE `title_key` = 'TPL_HATHOR_MESSAGE_POSTINSTALL_TITLE';
 
 -- Remove any orphaned update site mappings left behind by the removed extensions
 DELETE FROM `#__update_sites_extensions` WHERE `extension_id` NOT IN (SELECT `extension_id` FROM `#__extensions`);
