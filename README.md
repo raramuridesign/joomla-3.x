@@ -1,5 +1,13 @@
-Joomla 3.x
-=============
+Joomla 3.x UTD (up-to-date)
+===========================
+
+According to [market share estimates](https://w3techs.com/technologies/details/cm-joomla) (as of May 2026), Joomla 3.x is currently used on more than 50% of all installed Joomla sites worldwide.
+
+However, official support for Joomla 3.x was ended on February 2025 (counting the eLTS program).
+
+So we're actively developing Joomla 3.x UTD as an up-to-date distribution of the Joomla 3.x content management system, built to ensure code security and support modern PHP & MySQL/MariaDB versions.
+
+---
 
 ## CHANGELOG
 
