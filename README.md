@@ -45,21 +45,19 @@ In a typical Linux based server, you can easily do the upgrade using the followi
 wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 && rm -rf installation .github .gitignore *.md
 ```
 
-### Upgrading via the Joomla Update Component (from v3.12 onwards)
+**Starting with v3.12**, this distribution ships its own update feed.
 
-> **⚠ IMPORTANT — Action required for sites already running v3.11 or earlier:**
->
-> Starting with v3.12, this distribution ships its own update feed. Sites on v3.12 or newer will receive future updates automatically through the Joomla updater (`Components → Joomla Update`).
->
-> If your site is currently running **v3.11 or earlier**, you must point the Joomla updater to this distribution's update feed **once** before in-panel updates will work.
->
-> Adjust the options for the Joomla Update Component (either from the component's "Options" or through Joomla's "Global Configuration") and use the following update URL in the "Custom URL" field, along with these settings:
->
-> - Update Channel: Custom URL
-> - Minimum Stability: Stable
-> - Custom URL: `https://joomlaworks.github.io/joomla-3.x/list.xml`
->
-> Once updated to v3.12 (or newer), this step is no longer necessary — future updates will be detected and applied automatically.
+Sites on v3.12 or newer will receive update notifications automatically through the Joomla Update component (`Components → Joomla Update`), which you can also use to perform an in-place update of your Joomla 3.x site to this distribution.
+
+If your site is currently running **v3.11 or earlier**, you must point the Joomla Update component to this distribution's update feed **once** before in-place updates will work.
+
+Adjust the options for the Joomla Update component (either from the component's "Options" or through Joomla's "Global Configuration") and use the following update URL in the "Custom URL" field, along with these settings:
+
+- Update Channel: Custom URL
+- Minimum Stability: Stable
+- Custom URL: `https://joomlaworks.github.io/joomla-3.x/list.xml`
+
+Once updated to v3.12 (or newer), this step is no longer necessary — future updates will be detected and applied automatically.
 
 
 ## NOTES ON MYSQL & MARIADB
