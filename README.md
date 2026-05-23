@@ -79,7 +79,7 @@ sql_mode = ""
 
 
 ## NOTES ON OPERATING SYSTEM SUPPORT
-This distribution is built solely for Linux based systems, cause let's be honest, you'll be hosting this on some Linux flavour, not Windows or MacOS. As such, we don't test on Windows or macOS. Things ***should*** work just fine if you use something like XAMPP or MAMP respectively, but just know that we don't test against these OSes.
+This distribution is built solely for Linux/BSD based systems, cause let's be honest, you'll be hosting this on some Linux/BSD flavour, not Windows or macOS. As such, we don't test on Windows or macOS. Things ***should*** work just fine if you use something like XAMPP or MAMP respectively, but just know that we don't test against these two operating systems.
 
 
 ## CONTRIBUTE
