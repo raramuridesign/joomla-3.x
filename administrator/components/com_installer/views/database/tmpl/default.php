@@ -36,8 +36,8 @@ defined('_JEXEC') or die;
 							<li><?php echo JText::sprintf('COM_INSTALLER_MSG_DATABASE_SCHEMA_ERROR', $this->schemaVersion, $this->changeSet->getSchema()); ?></li>
 						<?php endif; ?>
 
-						<?php if (version_compare($this->updateVersion, JVERSION) != 0) : ?>
-							<li><?php echo JText::sprintf('COM_INSTALLER_MSG_DATABASE_UPDATEVERSION_ERROR', $this->updateVersion, JVERSION); ?></li>
+						<?php if (version_compare($this->updateVersion, $this->cmsVersion) != 0) : ?>
+							<li><?php echo JText::sprintf('COM_INSTALLER_MSG_DATABASE_UPDATEVERSION_ERROR', $this->updateVersion, $this->cmsVersion); ?></li>
 						<?php endif; ?>
 
 						<?php foreach ($this->errors as $line => $error) : ?>

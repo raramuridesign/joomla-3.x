@@ -45,6 +45,25 @@ class InstallerViewDatabase extends InstallerViewDefault
 		$this->pagination = $this->get('Pagination');
 		$this->errorCount = count($this->errors);
 
+		// Read the authoritative CMS version from joomla.xml rather than the JVERSION
+		// constant: OPcache can serve stale bytecode for Version.php across PHP-FPM
+		// workers even after opcache_reset() was called during the upgrade, causing
+		// JVERSION to still evaluate to the pre-upgrade value on subsequent requests.
+		// XML files are never bytecode-cached, so simplexml_load_file() always returns
+		// the value that is actually on disk.
+		$manifestFile = JPATH_ADMINISTRATOR . '/manifests/files/joomla.xml';
+		$this->cmsVersion = JVERSION;
+
+		if (is_readable($manifestFile))
+		{
+			$xml = @simplexml_load_file($manifestFile);
+
+			if ($xml !== false && !empty((string) $xml->version))
+			{
+				$this->cmsVersion = (string) $xml->version;
+			}
+		}
+
 		if ($this->schemaVersion != $this->changeSet->getSchema())
 		{
 			$this->errorCount++;
@@ -55,7 +74,7 @@ class InstallerViewDatabase extends InstallerViewDefault
 			$this->errorCount++;
 		}
 
-		if (version_compare($this->updateVersion, JVERSION) != 0)
+		if (version_compare($this->updateVersion, $this->cmsVersion) != 0)
 		{
 			$this->errorCount++;
 		}

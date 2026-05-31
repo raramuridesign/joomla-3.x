@@ -924,6 +924,22 @@ ENDDATA;
 		// Refresh versionable assets cache.
 		JFactory::getApplication()->flushAssets();
 
+		// Specifically invalidate Version.php in OPcache so that JVERSION evaluates
+		// to the new version on the very next request. opcache_reset() was already
+		// called in restore_finalisation.php, but on servers where that call does not
+		// propagate across all PHP-FPM workers (e.g. when opcache.restrict_api is set),
+		// a targeted invalidate of just this one file is a cheaper and safer fallback.
+		$versionFile = JPATH_LIBRARIES . '/src/Version.php';
+
+		if (is_file($versionFile)
+			&& ini_get('opcache.enable')
+			&& function_exists('opcache_invalidate')
+			&& (!ini_get('opcache.restrict_api')
+				|| stripos(realpath($_SERVER['SCRIPT_FILENAME']), ini_get('opcache.restrict_api')) === 0))
+		{
+			opcache_invalidate($versionFile, true);
+		}
+
 		return true;
 	}
 
