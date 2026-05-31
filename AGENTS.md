@@ -11,7 +11,7 @@ This file is the primary onboarding document for resuming work on this project. 
 A security-hardened, PHP 8.x-compatible fork of Joomla 3.10.20 eLTS, maintained by JoomlaWorks (Fotis Evangelou). It is **not** an official Joomla release. The goal is to keep Joomla 3.x sites running safely on modern PHP and MySQL/MariaDB versions, with backported CVE fixes from Joomla 4/5/6.
 
 - **GitHub repo:** https://github.com/joomlaworks/joomla-3.x
-- **Current version:** Joomla 3.12.0 (released May 21, 2026)
+- **Current version:** Joomla 3.13.0 (released May 31, 2026)
 - **Minimum PHP:** 7.4 — **all code changes must remain compatible with PHP 7.4**
 - **Tested up to PHP:** 8.5
 - **Database support:** MySQL 5.7+, MySQL 8.x, MariaDB, PostgreSQL, SQL Azure
@@ -43,6 +43,12 @@ The following fixes are already in the codebase. Do not duplicate them:
 - All remaining implicit-nullable fixes in fof/, vendor/joomla/session, vendor/joomla/data, vendor/joomla/di, vendor/google/recaptcha, vendor/symfony/yaml, vendor/joomla/filesystem, plugins/privacy/*
 - All `(boolean)` → `(bool)` casts (libraries/src/ and libraries/joomla/, 13 files)
 - `Uri::getInstance()` null guard (null → 'SERVER' coercion)
+- `Uri::getInstance()` `HTTP_HOST` absent-in-CLI guard (`$httpHost` variable with `'localhost'` fallback before the SERVER URI branch — both Apache and IIS paths)
+- All Q-3 through Q-10 PHP 8.x fixes (see 3.13 patch log): null guards in `HtmlView::escape()`, `Date::__construct()`, `ListModel::populateState()` (×2), `utf8_ltrim/rtrim/trim`, `Json::stringToObject()`; declared properties `$registeredurlparams` on `CMSApplication`, `$itemTags` on `TagsHelper`, `$empty` and `$dates` on `FinderIndexerQuery`
+- `fixSchemas()` in `com_admin/script.php` (auto-runs SQL migrations + syncs `#__schemas` + syncs `manifest_cache.version` on upgrade)
+- `administrator/manifests/files/joomla.xml` version and `<updateservers>` URL (updated; do not revert)
+- `deleteUnexistingFiles()` 3.12 entries (beez3, hathor, eos310, phpversioncheck directories and language files)
+- `com_joomlaupdate` OPcache fix (`cleanup()` reads version from `joomla.xml`, `complete.php` uses session value)
 
 ### Update server
 
@@ -53,11 +59,12 @@ The update server uses a **two-file architecture** that mirrors `update.joomla.o
 - **Download URL:** `https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip`
 - **GitHub Action:** `.github/workflows/rolling-release.yml` — rebuilds the zip on every push to `main` using `git archive`
 
-**To release a new version (e.g. 3.13.0):**
+**To release a new version (e.g. 3.14.0):**
 1. Bump `MINOR_VERSION` (and `RELEASE`, `DEV_LEVEL`) in `libraries/src/Version.php`
-2. In `docs/list.xml`: bump `version="3.12.0"` → `version="3.13.0"` in all `<extension>` entries, and add a new entry for `targetplatformversion="3.13"`
-3. In `docs/extension.xml`: bump `<version>3.12.0</version>` → `<version>3.13.0</version>` and update `<infourl>`
-4. Update `CHANGELOG.md` and `README.md`, push
+2. In `docs/list.xml`: bump `version="3.13.0"` → `version="3.14.0"` in all `<extension>` entries, and add a new entry for `targetplatformversion="3.14"`
+3. In `docs/extension.xml`: bump `<version>3.13.0</version>` → `<version>3.14.0</version>` and update `<infourl>`
+4. In `administrator/manifests/files/joomla.xml`: bump `<version>` to match and update `<creationDate>`
+5. Update `CHANGELOG.md` and `README.md`, push
 
 ### Removed in 3.12 (do not re-add)
 
@@ -627,3 +634,91 @@ Three bugs discovered after the 3.12.0 release was published, fixed before the n
 - **Files:** `administrator/components/com_admin/sql/updates/mysql/3.12.0-2026-05-21.sql`, `…/postgresql/…`, `…/sqlazure/…`
 - **Root cause:** The `#__postinstall_messages` table has no `language_key` column. The correct column for the language key is `title_key`. The migration SQL's `DELETE FROM #__postinstall_messages WHERE language_key = 'TPL_HATHOR_MESSAGE_POSTINSTALL_TITLE'` triggered MySQL error 1054 ("Unknown column 'language_key' in 'where clause'") mid-migration on first upgrade attempt.
 - **Fix:** Column name changed from `language_key` to `title_key` in all three SQL variants. Sites that hit this error mid-migration need to run the corrected DELETE manually: `DELETE FROM #__postinstall_messages WHERE title_key = 'TPL_HATHOR_MESSAGE_POSTINSTALL_TITLE';`
+
+---
+
+# Joomla 3.13.0 — Patch Log
+
+**Date:** May 31, 2026
+**Base version:** Joomla 3.12.0
+**Patched version:** Joomla 3.13.0
+
+---
+
+## PHP 8.x Compatibility Fixes — Session 4
+
+The following fixes were identified from a community report posted in GitHub Discussions (user MaghSamana). All are backward-compatible with PHP 7.4.
+
+### Q-3 — `htmlspecialchars(null)` in `HtmlView::escape()` (PHP 8.1)
+- **File:** `libraries/src/MVC/View/HtmlView.php`
+- **Issue:** `escape()` passed `$var` directly to `htmlspecialchars()` or a custom escape function. When `$var` is `null` (common for optional database fields), PHP 8.1 deprecated passing `null` to `htmlspecialchars()`. This fires on every view that renders a null field through `escape()`.
+- **Fix:** Added `if ($var === null) { return ''; }` guard at the top of `escape()` before any function call.
+
+### Q-4 — `strtoupper(null)` in `ListModel::populateState()` (PHP 8.1)
+- **File:** `libraries/src/MVC/Model/ListModel.php` (two occurrences, lines 568 and 616)
+- **Issue:** `$value` comes from `getUserStateFromRequest()` which returns `null` when the key is absent and no default is set. `strtoupper(null)` was deprecated in PHP 8.1.
+- **Fix:** Changed both to `strtoupper((string) $value)`.
+
+### Q-5 — `DateTime::__construct(null)` in `Date::__construct()` (PHP 8.1)
+- **File:** `libraries/src/Date/Date.php`
+- **Issue:** The parent `DateTime::__construct()` was called with `$date` which can be `null` if a caller passes `null` explicitly (e.g. `new JDate(null)` from third-party extensions). PHP 8.1 deprecated passing `null` where a `string` is expected.
+- **Fix:** Changed to `parent::__construct($date ?? 'now', $tz)`.
+
+### Q-6 — Dynamic property `$registeredurlparams` on `CMSApplication` (PHP 8.2)
+- **File:** `libraries/src/Application/CMSApplication.php`
+- **Issue:** `BaseController` (and the FOF controller) assign `$app->registeredurlparams` directly on the application object in both frontend and backend contexts. The property was never declared in any application class, triggering PHP 8.2 dynamic property deprecation on every cacheable request from any controller that registers URL params.
+- **Fix:** Declared `public $registeredurlparams = null;` in `CMSApplication` (the common base for `SiteApplication` and `AdministratorApplication`).
+
+### Q-7 — `trim(null)` / `ltrim(null)` / `rtrim(null)` in phputf8 (PHP 8.1)
+- **File:** `libraries/vendor/joomla/string/src/phputf8/trim.php`
+- **Issue:** `utf8_ltrim()`, `utf8_rtrim()`, and `utf8_trim()` all call the native PHP trim functions with `$str` which can be `null`. PHP 8.1 deprecated passing `null` to these string functions.
+- **Fix:** Added `(string)` cast: `ltrim((string) $str)`, `rtrim((string) $str)`, `trim((string) $str)` in the short-circuit early-return paths of all three functions.
+
+### Q-8 — `trim(null)` in `Registry/Format/Json::stringToObject()` (PHP 8.1)
+- **File:** `libraries/vendor/joomla/registry/src/Format/Json.php`
+- **Issue:** `$data` can be `null` when passed from upstream code. PHP 8.1 deprecated `null` to `trim()`.
+- **Fix:** Changed to `$data = trim((string) $data);`.
+
+### Q-9 — Dynamic property `$itemTags` on `TagsHelper` (PHP 8.2)
+- **File:** `libraries/src/Helper/TagsHelper.php`
+- **Issue:** `getItemTags()` assigns `$this->itemTags = $db->loadObjectList()` without the property being declared in the class. Triggers PHP 8.2 dynamic property deprecation whenever tags are loaded.
+- **Fix:** Declared `public $itemTags = array();` in the class body, before `$typeAlias`.
+
+### Q-10 — Dynamic properties `$empty` and `$dates` on `FinderIndexerQuery` (PHP 8.2)
+- **File:** `administrator/components/com_finder/helpers/indexer/query.php`
+- **Issue:** Both `$this->empty` and `$this->dates` are assigned in `__construct()` without class-level declarations, triggering PHP 8.2 dynamic property deprecation whenever a Smart Search query is constructed.
+- **Fix:** Declared `public $empty = false;` and `public $dates;` in the class body after `$when2`.
+
+---
+
+## CLI Compatibility Fix
+
+### Q-11 — Undefined `HTTP_HOST` warning in CLI context in `Uri::getInstance()`
+- **File:** `libraries/src/Uri/Uri.php`
+- **Issue:** When building the server URI (`$uri == 'SERVER'`), both the Apache path (line 95) and the IIS/fallback path (line 106) accessed `$_SERVER['HTTP_HOST']` directly. `HTTP_HOST` is never set in CLI context. The resulting PHP warning printed to stdout, poisoning CLI output and cascading into the "headers already sent" session startup failure. This is separate from the B-5 fix (which guarded against `null` as the `$uri` argument itself).
+- **Fix:** Added `$httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';` before the Apache/IIS conditional, and replaced both raw `$_SERVER['HTTP_HOST']` accesses with `$httpHost`.
+
+---
+
+## Infrastructure & Update Fixes
+
+### I-1 — Auto-fix schema mismatch on upgrade
+- **File:** `administrator/components/com_admin/script.php`
+- **Issue:** The `update()` method called `updateDatabase()` (MySQL engine change + plugin cleanup only) but never ran the SQL migration files in `sql/updates/`. After every upgrade, the Extensions → Manage → Database view showed "Database update version (old) does not match CMS version (new)", requiring a manual "Fix" click that ran `JSchemaChangeset::fix()` + updated `#__schemas` + updated `manifest_cache.version`.
+- **Fix:** Added protected method `fixSchemas()` and called it from `update()` after `updateDatabase()`. The method: (1) instantiates `JSchemaChangeset` over `sql/updates/`; (2) calls `fix()` to apply all pending migration files; (3) updates the `#__schemas` row for extension_id 700 to the latest SQL file version; (4) syncs `manifest_cache.version` for extension_id 700 to `$cmsVersion->getShortVersion()`.
+
+### I-2 — `joomla.xml` version stale + wrong update server URL
+- **File:** `administrator/manifests/files/joomla.xml`
+- **Issue:** The manifest `<version>` field was still `3.10.20-elts` (never updated from the original eLTS value). Since `updateManifestCaches()` reads this file and writes to `manifest_cache`, every upgrade stored `3.10.20-elts` as the Joomla extension version — the actual root cause of the "database update version does not match" banner. Additionally, `<updateservers>` still pointed to `https://update.joomla.org/core/list.xml`; the JInstaller processes this during an upgrade and would silently revert `#__update_sites` row 1 back to the official Joomla server, breaking future update notifications.
+- **Fix:** Updated `<version>` to the current release version and `<creationDate>` to the release date. Changed `<updateservers>` URL to `https://joomlaworks.github.io/joomla-3.x/list.xml`.
+- **Ongoing:** This file must be updated on every version bump (added to the release checklist as step 4).
+
+### I-3 — Filesystem cleanup missing for 3.12 removed items
+- **File:** `administrator/components/com_admin/script.php` (`deleteUnexistingFiles()`)
+- **Issue:** The 3.12 migration SQL correctly removed DB records for `beez3`, `hathor`, `eos310`, and `phpversioncheck` — but Kickstart (the zip extractor used by `com_joomlaupdate`) only overlays files and never deletes anything absent from the package. Files were left on disk. `deleteUnexistingFiles()` is the correct mechanism but the 3.12 entries were never added.
+- **Fix:** Added a `// Joomla 3.12.0` block to `$files` (language files for all four items) and `$folders` (`/templates/beez3`, `/administrator/templates/hathor`, `/plugins/quickicon/eos310`, `/plugins/quickicon/phpversioncheck`, `/media/plg_quickicon_eos310`).
+
+### I-4 — `com_joomlaupdate` complete screen shows old version (OPcache)
+- **Files:** `administrator/components/com_joomlaupdate/controllers/update.php`, `administrator/components/com_joomlaupdate/views/default/tmpl/complete.php`
+- **Issue:** After an upgrade, the "Your Joomla version is now X.Y.Z" message on the complete screen used `JVERSION`. PHP-FPM runs multiple worker processes each with their own OPcache. `opcache_reset()` is called during `finalise()` but only resets the current worker; the `cleanup()` and `complete` requests can land on different workers with stale `Version.php` still cached, so `JVERSION` evaluates to the pre-upgrade value.
+- **Fix:** In `cleanup()`, after `$model->cleanUp()`: read the new version from `administrator/manifests/files/joomla.xml` on disk using `simplexml_load_file()` (XML files are never bytecode-cached by OPcache); store it in `com_joomlaupdate.newversion` user state. In `complete.php`: read from that session key (falling back to `JVERSION`) and clear it immediately after use.

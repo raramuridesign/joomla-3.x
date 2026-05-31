@@ -222,6 +222,24 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 
 		$model->cleanUp();
 
+		// Read the new version from the manifest XML on disk rather than from the JVERSION
+		// constant, which PHP-FPM worker processes may still serve stale from OPcache even
+		// after opcache_reset() was called in an earlier worker during finalise().
+		$newVersion = JVERSION;
+		$manifestFile = JPATH_ADMINISTRATOR . '/manifests/files/joomla.xml';
+
+		if (is_readable($manifestFile))
+		{
+			$xml = @simplexml_load_file($manifestFile);
+
+			if ($xml !== false && !empty((string) $xml->version))
+			{
+				$newVersion = (string) $xml->version;
+			}
+		}
+
+		JFactory::getApplication()->setUserState('com_joomlaupdate.newversion', $newVersion);
+
 		$url = 'index.php?option=com_joomlaupdate&view=default&layout=complete';
 		$this->setRedirect($url);
 

@@ -1,5 +1,38 @@
 # CHANGELOG
 
+## Version 3.13 - released May 31st, 2026
+Summary of changes:
+- The Isis administrator (backend) template now uses CSS view transitions
+- All obsolete CSS has been removed from the Isis template
+- Further PHP 8.x compatibility fixes, extending coverage to newly reported files
+- Fixed: "Database update version does not match CMS version" in Extensions → Manage → Database — SQL schema migrations now run automatically on upgrade
+- Fixed: Joomla Update "complete" screen showed the old version number after an upgrade (PHP-FPM OPcache multi-worker issue)
+
+In detail:
+
+**PHP 8.2 — Dynamic property deprecations (community-reported, via GitHub Discussions)**
+- Declared `public $registeredurlparams = null` on `CMSApplication` — set dynamically by `BaseController` and the FOF controller in both frontend and backend contexts; triggered PHP 8.2 dynamic property deprecation on every cacheable page request
+- Declared `public $itemTags = array()` on `TagsHelper` — assigned in `getItemTags()` without a declaration; triggered PHP 8.2 dynamic property deprecation whenever tags are loaded for an item
+- Declared `public $empty = false` and `public $dates` on `FinderIndexerQuery` — both assigned in `__construct()` without a class-level declaration (PHP 8.2)
+
+**PHP 8.1 — null-to-scalar deprecations (community-reported, via GitHub Discussions)**
+- Added null guard in `HtmlView::escape()`: returns `''` immediately when `$var === null`, before calling `htmlspecialchars()` — `htmlspecialchars(null, ...)` was deprecated in PHP 8.1 and fires on every null field rendered through any view's `escape()` method
+- Added `(string)` cast to `$str` in `utf8_ltrim()`, `utf8_rtrim()`, and `utf8_trim()` in `libraries/vendor/joomla/string/src/phputf8/trim.php` — these receive `null` from upstream callers; PHP 8.1 deprecated passing `null` to the native trim functions
+- Added `(string)` cast in `Registry/Format/Json::stringToObject()` before `trim($data)` — `$data` can be `null`; PHP 8.1 deprecated `null` to `trim()`
+- Added `(string)` cast in both `strtoupper($value)` calls in `ListModel::populateState()` — `$value` comes from `getUserStateFromRequest()` which returns `null` when the key is absent; PHP 8.1 deprecated `null` to `strtoupper()`
+- Added `$date ?? 'now'` guard in `Date::__construct()` before `parent::__construct()` — `DateTime::__construct(null)` is deprecated in PHP 8.1; third-party extensions that call `new JDate(null)` triggered this on every affected page
+
+**PHP 8.0+ — CLI warning: undefined `HTTP_HOST`**
+- Added `$httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost'` guard in `Uri::getInstance()` before building the server URI from `$_SERVER` — `HTTP_HOST` is absent in CLI context; the previously bare `$_SERVER['HTTP_HOST']` access emitted an undefined-key warning that poisoned stdout and cascaded into the fatal "Failed to start the session because headers have already been sent" error for any CLI script that bootstrapped the CMS application
+
+**Update & schema infrastructure fixes**
+- Added `fixSchemas()` method to `administrator/components/com_admin/script.php`, called automatically from `update()` on every upgrade: (1) runs `JSchemaChangeset::fix()` to apply all pending SQL migration files from `sql/updates/`; (2) updates `#__schemas` to the latest file version; (3) syncs `manifest_cache.version` for extension_id 700 to `JVERSION` — eliminates the "Database update version does not match CMS version" banner that previously required a manual "Fix" click in Extensions → Manage → Database
+- Updated `administrator/manifests/files/joomla.xml`: `<version>` was never updated from its original `3.10.20-elts` value, causing `updateManifestCaches()` to write the wrong version to `manifest_cache` on every upgrade; also updated `<updateservers>` to `https://joomlaworks.github.io/joomla-3.x/list.xml` — prevents upgrades from silently reverting the `#__update_sites` entry back to `update.joomla.org`
+- Added 3.12 filesystem cleanup entries to `deleteUnexistingFiles()` in `script.php`: `/templates/beez3`, `/administrator/templates/hathor`, `/plugins/quickicon/eos310`, `/plugins/quickicon/phpversioncheck`, `/media/plg_quickicon_eos310` and their associated language files are now removed from disk on upgrade, closing the gap where the 3.12 migration SQL correctly removed DB records but left the actual files on disk
+- Fixed `com_joomlaupdate` post-upgrade "complete" screen showing the old version instead of the new one: on PHP-FPM with OPcache, `opcache_reset()` (called during `finalise()`) only resets the current worker process — the `cleanup()` and `complete` requests can land on different workers that still have the old `Version.php` bytecode cached, leaving `JVERSION` at the pre-upgrade value; `cleanup()` now reads the version from `administrator/manifests/files/joomla.xml` on disk (XML files are never bytecode-cached by OPcache), stores it in `com_joomlaupdate.newversion` session state, and `complete.php` reads from the session instead of `JVERSION`
+
+---
+
 ## Version 3.12 - released May 21st, 2026
 Summary of changes:
 - Built-in update server: sites running 3.12 or newer can now receive updates directly via the Joomla backend updater
