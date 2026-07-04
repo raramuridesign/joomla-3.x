@@ -5,7 +5,9 @@ According to [market share estimates](https://w3techs.com/technologies/details/c
 
 However, official support for Joomla 3.x ended in February 2025 (counting the eLTS program).
 
-So we're actively developing Joomla 3.x UTD as an up-to-date distribution of the Joomla 3.x content management system, built to ensure code security and support modern PHP & MySQL/MariaDB versions.
+So we're actively developing Joomla 3.x UTD as an up-to-date distribution of the Joomla 3.x content management system, built to ensure code security, support modern PHP & MySQL/MariaDB versions & fix any broken behaviour that never got sorted before the release of newer major versions of Joomla.
+
+If you are a Joomla extension developer reading this, ensure your extension update XML files don't stop at Joomla 3.10.x. Do your users a favour ;)
 
 ---
 
@@ -42,10 +44,7 @@ Summary of changes:
 
 For detailed changelog, please visit: https://github.com/joomlaworks/joomla-3.x/blob/main/CHANGELOG.md
 
-
-## TO DO
-- Maintain modern PHP compatibility and apply security patches when necessary
-
+---
 
 ## HOW TO UPGRADE FOR EXISTING JOOMLA 3.X SITES
 
@@ -78,8 +77,16 @@ wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.
 To install, just extract the latest rolling release https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip where you want the site to be and then follow the normal Joomla installation process.
 
 
-## NOTES ON PHP COMPATIBILITY
-This distribution targets at least PHP 7.4. This is the baseline version we use for broader compatibility with hosts and the Joomla 3.x ecosystem (e.g. other extensions and templates).
+## PHP COMPATIBILITY
+This distribution targets at least PHP 7.4. This is the baseline version we use for broader compatibility with hosts and the Joomla 3.x ecosystem (e.g. other extensions and templates that are actively maintained).
+
+**For end users:**
+If your site's server/webspace is configured with PHP 7.0 to 7.3, upgrading to PHP 7.4 is typically a safe switch. The same applies to sites on PHP 5.6, just make sure your extensions and templates are not holding you back.
+
+**For professionals/hosting companies:**
+If you are hosting sites for others, consider letting them know they can safely upgrade to this Joomla distribution, both for security as well as newer PHP compatibility/features/performance.
+
+Switching to this distribution will also allow you (or take you closer) to upgrade your server(s). E.g. a server hosting Joomla sites using PHP prior to version 7.2 may be stuck in CentOS 7/cPanel, which is no longer supported by either the OS vendor or cPanel, with whatever that entails primarily for security.
 
 
 ## NOTES ON MYSQL & MARIADB
@@ -98,7 +105,6 @@ We also recommend the following setting for maximum compatibility in both MySQL 
 ```
 sql_mode = ""
 ```
-
 
 ## NOTES ON OPERATING SYSTEM SUPPORT
 This distribution is built solely for Linux/BSD based systems, cause let's be honest, you'll be hosting this on some Linux/BSD flavour, not Windows or macOS. As such, we don't test on Windows or macOS. Things ***should*** work just fine if you use something like XAMPP or MAMP respectively, but just know that we don't test against these two operating systems.
