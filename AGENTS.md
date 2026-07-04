@@ -44,7 +44,7 @@ The following fixes are already in the codebase. Do not duplicate them:
 - All `(boolean)` → `(bool)` casts (libraries/src/ and libraries/joomla/, 13 files)
 - `Uri::getInstance()` null guard (null → 'SERVER' coercion)
 - `Uri::getInstance()` `HTTP_HOST` absent-in-CLI guard (`$httpHost` variable with `'localhost'` fallback before the SERVER URI branch — both Apache and IIS paths)
-- All Q-3 through Q-10 PHP 8.x fixes (see 3.13 patch log): null guards in `HtmlView::escape()`, `Date::__construct()`, `ListModel::populateState()` (×2), `utf8_ltrim/rtrim/trim`, `Json::stringToObject()`; declared properties `$registeredurlparams` on `CMSApplication`, `$itemTags` on `TagsHelper`, `$empty` and `$dates` on `FinderIndexerQuery`
+- All Q-3 through Q-13 PHP 8.x fixes (see 3.13 patch log): null guards in `HtmlView::escape()`, `Date::__construct()`, `ListModel::populateState()` (×2), `utf8_ltrim/rtrim/trim`, `Json::stringToObject()`; declared properties `$registeredurlparams` on `CMSApplication`, `$itemTags` on `TagsHelper`, `$empty` and `$dates` on `FinderIndexerQuery`; `HtmlDocument::getBuffer()`/`setBuffer()` null-array-offset normalization; `Image::destroy()` no longer calls the deprecated `imagedestroy()`
 - `fixSchemas()` in `com_admin/script.php` (auto-runs SQL migrations + syncs `#__schemas` + syncs `manifest_cache.version` on upgrade)
 - `administrator/manifests/files/joomla.xml` version and `<updateservers>` URL (updated; do not revert)
 - `deleteUnexistingFiles()` 3.12 entries (beez3, hathor, eos310, phpversioncheck directories and language files)
@@ -722,3 +722,19 @@ The following fixes were identified from a community report posted in GitHub Dis
 - **Files:** `administrator/components/com_joomlaupdate/controllers/update.php`, `administrator/components/com_joomlaupdate/views/default/tmpl/complete.php`
 - **Issue:** After an upgrade, the "Your Joomla version is now X.Y.Z" message on the complete screen used `JVERSION`. PHP-FPM runs multiple worker processes each with their own OPcache. `opcache_reset()` is called during `finalise()` but only resets the current worker; the `cleanup()` and `complete` requests can land on different workers with stale `Version.php` still cached, so `JVERSION` evaluates to the pre-upgrade value.
 - **Fix:** In `cleanup()`, after `$model->cleanUp()`: read the new version from `administrator/manifests/files/joomla.xml` on disk using `simplexml_load_file()` (XML files are never bytecode-cached by OPcache); store it in `com_joomlaupdate.newversion` user state. In `complete.php`: read from that session key (falling back to `JVERSION`) and clear it immediately after use.
+
+---
+
+## Post-3.13.0 Bug Fixes — July 4, 2026
+
+Both fixes below were contributed via GitHub PR #13 (github.com/joomlaworks/joomla-3.x/pull/13) by community member @raramuridesign. Verified against upstream PHP 8.5 deprecation notices before merging; both are backward-compatible with PHP 7.4.
+
+### Q-12 — `null` used as array offset in `HtmlDocument::getBuffer()` / `setBuffer()` (PHP 8.5)
+- **File:** `libraries/src/Document/HtmlDocument.php`
+- **Issue:** `getBuffer($type, $name, $attribs)` and `setBuffer()` index `parent::$_buffer[$type][$name][$title]` directly. `$name` defaults to `null` and `$title` (pulled from `$attribs['title']`) is `null` whenever no title is set — the common case for most modules/components. PHP 8.5 deprecates using `null` as an array offset (same class of issue as B-5/Q-11 against `Uri::getInstance()`), so this fired on nearly every page render.
+- **Fix:** In `getBuffer()`, added local `$bufferName`/`$bufferTitle` set to `''` when `$name`/`$title` are `null`, and used them for the buffer-indexing reads (the `isset()` check, the cached-`$data` read, and the final return). In `setBuffer()`, `$options['type']`/`['name']`/`['title']` are read through `?? ''` before being used as array keys, so both the write path and the read path converge on `''` as the actual stored key.
+
+### Q-13 — `imagedestroy()` deprecated (PHP 8.5); stray `(boolean)` cast
+- **File:** `libraries/vendor/joomla/image/src/Image.php`
+- **Issue:** `Image::destroy()` called `imagedestroy($this->getHandle())`. Since PHP 8.0, GD uses refcounted `GdImage` objects instead of resources, so `imagedestroy()` has had no effect for several major versions; PHP 8.5 deprecates calling it at all. Also found one remaining `(boolean)` cast in `setThumbnailGenerate()`, missed by the B-4 sweep in 3.12 (that pass's file list didn't include this vendor file).
+- **Fix:** `destroy()` now sets `$this->handle = null` and returns `true` directly instead of calling `imagedestroy()` — `isLoaded()` (via `isValidImage($this->handle)`) still correctly reports `false` afterward, preserving the method's observable contract. `(boolean)` → `(bool)` in `setThumbnailGenerate()`.

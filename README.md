@@ -17,6 +17,7 @@ Summary of changes:
 - All obsolete CSS has been removed from the Isis template
 - Further PHP 8.x compatibility fixes, extending coverage to newly reported files
 - Fixed: Database update version (OLD-VERSION) does not match CMS version (CURRENT-VERSION) - under Extensions > Manage > Database
+- (July 4, 2026) Fixed two PHP 8.5 deprecations reported via PR #13: null array offsets in `HtmlDocument::getBuffer()`/`setBuffer()`, and the now-deprecated `imagedestroy()` call in `Image::destroy()`
 
 ## Version 3.12 - released May 21st, 2026
 Summary of changes:

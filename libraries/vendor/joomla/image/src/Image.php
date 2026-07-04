@@ -1205,7 +1205,9 @@ class Image implements LoggerAwareInterface
 	{
 		if ($this->isLoaded())
 		{
-			return imagedestroy($this->getHandle());
+			$this->handle = null;
+
+			return true;
 		}
 
 		return false;
@@ -1233,7 +1235,7 @@ class Image implements LoggerAwareInterface
 	 */
 	public function setThumbnailGenerate($quality = true)
 	{
-		$this->generateBestQuality = (boolean) $quality;
+		$this->generateBestQuality = (bool) $quality;
 	}
 
 	/**
