@@ -33,7 +33,7 @@ In detail:
 
 Post-release corrections (July 4, 2026, contributed by [@raramuridesign](https://github.com/raramuridesign) via [PR #13](https://github.com/joomlaworks/joomla-3.x/pull/13)):
 - Fixed PHP 8.5 deprecation "Using null as an array offset" in `HtmlDocument::getBuffer()` / `setBuffer()` — `$name`/`$title` are frequently `null` (e.g. modules rendered without a title) and were used directly as array keys into the internal render buffer; `getBuffer()` now normalizes them to `''` before indexing, and `setBuffer()` normalizes `$options['type']`/`['name']`/`['title']` with `?? ''` before storing
-- Fixed PHP 8.5 deprecation of `imagedestroy()` in `Image::destroy()` — the function has had no effect since PHP 8.0 (GD switched from resources to refcounted `GdImage` objects) and PHP 8.5 now deprecates calling it; replaced with `$this->handle = null`, which preserves the same `isLoaded()` behavior afterward
+- Fixed PHP 8.5 deprecation of `imagedestroy()` in `Image::destroy()` and `Backgroundfill::execute()` — the function has had no effect since PHP 8.0 (GD switched from resources to refcounted `GdImage` objects) and PHP 8.5 now deprecates calling it; `Image::destroy()` was changed to `$this->handle = null` (preserves `isLoaded()` behavior), and the redundant call on a local temp handle in `Backgroundfill` was simply removed
 - Fixed a stray `(boolean)` → `(bool)` cast in `libraries/vendor/joomla/image/src/Image.php`, missed by the broader PHP 8.5 cast sweep in 3.12
 
 ---
