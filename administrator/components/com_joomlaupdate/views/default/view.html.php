@@ -287,4 +287,3 @@ class JoomlaupdateViewDefault extends JViewLegacy
 				&& version_compare($this->updateInfo['latest'], $nextMinor, '>=');
 	}
 }
-

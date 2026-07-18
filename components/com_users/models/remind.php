@@ -161,7 +161,10 @@ class UsersModelRemind extends JModelForm
 
 		// Assemble the login link.
 		$link = 'index.php?option=com_users&view=login';
-		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
+
+		// Use the current request's scheme unless "Force SSL: Entire Site" is on (CVE-2026-48902) —
+		// previously this unconditionally downgraded to plain http even on HTTPS-only sites.
+		$mode = $config->get('force_ssl', 0) == 2 ? 1 : 0;
 
 		// Put together the email template data.
 		$data = ArrayHelper::fromObject($user);

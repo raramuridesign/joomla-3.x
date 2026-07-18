@@ -34,4 +34,3 @@ $form = $forms[0];
 	<?php echo $field->renderField(); ?>
 <?php endforeach; ?>
 </div>
-

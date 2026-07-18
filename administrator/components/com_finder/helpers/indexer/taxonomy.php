@@ -338,7 +338,7 @@ class FinderIndexerTaxonomy
 			->where($db->quoteName('m.link_id') . ' IS NULL');
 
 		$db->setQuery($query);
-		
+
 		$ids = $db->loadColumn();
 
 		if (empty($ids))
@@ -351,7 +351,7 @@ class FinderIndexerTaxonomy
 			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
-		
+
 		$db->execute();
 
 		return $db->getAffectedRows();

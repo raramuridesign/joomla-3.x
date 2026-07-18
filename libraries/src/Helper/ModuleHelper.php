@@ -559,8 +559,21 @@ abstract class ModuleHelper
 			$cache->setCaching(false);
 		}
 
-		// Module cache is set in seconds, global cache in minutes, setLifeTime works in minutes
-		$cache->setLifeTime($moduleparams->get('cache_time', $conf->get('cachetime') * 60) / 60);
+		// Module cache is set in seconds, global cache in minutes, setLifeTime works in minutes.
+		// Caching modes: 0 = No caching, 1 = Use Global (always honour Global Configuration's Cache
+		// Time), 2 = Use custom cache time (honour the module's own cache_time value instead). Modes
+		// 0 and 1 both ignore the module's own cache_time - it's only consulted for an explicit "2".
+
+		// Module output can be cached - use global cache time or override to a custom value
+		// If no value is provided, use the global cache time converted to seconds
+		$moduleCacheState = $moduleparams->get('cache', 1);
+
+		$cache->setLifeTime($conf->get('cachetime'));
+
+		if ($moduleCacheState == 2)
+		{
+			$cache->setLifeTime($moduleparams->get('cache_time', $conf->get('cachetime') * 60) / 60);
+		}
 
 		$wrkaroundoptions = array('nopathway' => 1, 'nohead' => 0, 'nomodules' => 1, 'modulemode' => 1, 'mergehead' => 1);
 

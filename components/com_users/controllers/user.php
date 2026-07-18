@@ -234,7 +234,7 @@ class UsersControllerUser extends UsersController
 		$app    = JFactory::getApplication();
 		$active = $app->getMenu()->getActive();
 		$itemid = $active ? $active->getParams()->get('logout') : 0;
-		
+
 		// Get the language of the page when multilang is on
 		if (JLanguageMultilang::isEnabled())
 		{

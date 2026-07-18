@@ -62,8 +62,8 @@ else
 		{
 			?>
 					<h2 class="<?php echo $direction; ?>">
-						<a href="<?php echo htmlspecialchars($rssurl, ENT_COMPAT, 'UTF-8'); ?>" target="_blank">
-						<?php echo $feed->title; ?></a>
+						<a href="<?php echo htmlspecialchars($rssurl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
+						<?php echo htmlspecialchars($feed->title, ENT_QUOTES, 'UTF-8'); ?></a>
 					</h2>
 			<?php
 		}
@@ -83,7 +83,7 @@ else
 		// Feed image
 		if ($feed->image && $params->get('rssimage', 1)) :
 		?>
-			<img src="<?php echo $feed->image->uri; ?>" alt="<?php echo $feed->image->title; ?>"/>
+			<img src="<?php echo htmlspecialchars($feed->image->uri, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($feed->image->title, ENT_QUOTES, 'UTF-8'); ?>"/>
 		<?php endif; ?>
 
 
@@ -100,10 +100,10 @@ else
 				<li>
 					<?php if (!empty($uri)) : ?>
 						<span class="feed-link">
-						<a href="<?php echo htmlspecialchars($uri, ENT_COMPAT, 'UTF-8'); ?>" target="_blank">
-						<?php echo trim($feed[$i]->title); ?></a></span>
+						<a href="<?php echo htmlspecialchars($uri, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
+						<?php echo htmlspecialchars(trim($feed[$i]->title), ENT_QUOTES, 'UTF-8'); ?></a></span>
 					<?php else : ?>
-						<span class="feed-link"><?php echo trim($feed[$i]->title); ?></span>
+						<span class="feed-link"><?php echo htmlspecialchars(trim($feed[$i]->title), ENT_QUOTES, 'UTF-8'); ?></span>
 					<?php endif; ?>
 					<?php if ($params->get('rssitemdate', 0)) : ?>
 						<div class="feed-item-date">

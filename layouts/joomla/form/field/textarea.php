@@ -73,4 +73,3 @@ $attributes = array(
 echo $name; ?>" id="<?php
 echo $id; ?>" <?php
 echo implode(' ', $attributes); ?> ><?php echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?></textarea>
-

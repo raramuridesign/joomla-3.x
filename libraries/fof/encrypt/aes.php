@@ -31,7 +31,7 @@ class FOFEncryptAes
 	 * @var  FOFEncryptAesInterface
 	 */
 	protected $adapter;
-	
+
 	/**
 	 * Initialise the AES encryption object.
 	 *
@@ -49,7 +49,7 @@ class FOFEncryptAes
 		if ($priority == 'openssl')
 		{
 			$this->adapter = new FOFEncryptAesOpenssl();
-			
+
 			if (!$this->adapter->isSupported($phpfunc))
 			{
 				$this->adapter = new FOFEncryptAesMcrypt();
@@ -58,7 +58,7 @@ class FOFEncryptAes
 		else
 		{
 			$this->adapter = new FOFEncryptAesMcrypt();
-			
+
 			if (!$this->adapter->isSupported($phpfunc))
 			{
 				$this->adapter = new FOFEncryptAesOpenssl();

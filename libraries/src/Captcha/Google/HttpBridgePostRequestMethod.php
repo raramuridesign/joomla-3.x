@@ -73,4 +73,3 @@ final class HttpBridgePostRequestMethod implements RequestMethod
 		}
 	}
 }
-

@@ -38,7 +38,7 @@ class PrivacyModelRequest extends JModelAdmin
 		}
 
 		// Get the form.
-		$form = $this->getForm();		
+		$form = $this->getForm();
 
 		// Check for an error.
 		if ($form instanceof Exception)

@@ -197,4 +197,4 @@ class FOFUtilsIniParser
 
 		return $result + $globals;
 	}
-} 
+}

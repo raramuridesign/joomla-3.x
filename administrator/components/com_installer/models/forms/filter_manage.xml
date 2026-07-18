@@ -62,6 +62,8 @@
 			<option value="status DESC">JSTATUS_DESC</option>
 			<option value="name ASC">COM_INSTALLER_HEADING_NAME_ASC</option>
 			<option value="name DESC">COM_INSTALLER_HEADING_NAME_DESC</option>
+			<option value="author ASC">COM_INSTALLER_HEADING_AUTHOR_ASC</option>
+			<option value="author DESC">COM_INSTALLER_HEADING_AUTHOR_DESC</option>
 			<option value="client_translated ASC">COM_INSTALLER_HEADING_LOCATION_ASC</option>
 			<option value="client_translated DESC">COM_INSTALLER_HEADING_LOCATION_DESC</option>
 			<option value="type_translated ASC">COM_INSTALLER_HEADING_TYPE_ASC</option>

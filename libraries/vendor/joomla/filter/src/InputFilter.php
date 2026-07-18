@@ -323,7 +323,19 @@ class InputFilter
 		$quoteStyle = version_compare(\PHP_VERSION, '5.4', '>=') ? \ENT_QUOTES | \ENT_HTML401 : \ENT_QUOTES;
 
 		$attrSubSet[0] = strtolower($attrSubSet[0]);
-		$attrSubSet[1] = html_entity_decode(strtolower($attrSubSet[1]), $quoteStyle, 'UTF-8');
+		$attrSubSet[1] = strtolower($attrSubSet[1]);
+
+		// Fully decode nested/double-encoded entities (CVE-2026-48903/CVE-2026-48905) before pattern matching.
+		// A single html_entity_decode() pass leaves constructs like "&amp;#58;" as "&#58;" (still entity-like,
+		// and not matched by the literal-colon check below), which a browser goes on to decode further. Loop to
+		// a fixed point (capped) so any depth of nested encoding is resolved before we inspect the value.
+		$previous = null;
+
+		for ($decodePass = 0; $decodePass < 5 && $previous !== $attrSubSet[1]; $decodePass++)
+		{
+			$previous = $attrSubSet[1];
+			$attrSubSet[1] = html_entity_decode($attrSubSet[1], $quoteStyle, 'UTF-8');
+		}
 
 		// Remove common XSS-evasion characters (CVE-2025-54476); include all ASCII whitespace per WHATWG URL parsing
 		$attrSubSet[1] = str_replace(["\t", "\n", "\r", "\v", "\f", " ", "\0"], '', $attrSubSet[1]);
@@ -678,8 +690,18 @@ class InputFilter
 			// Trim leading and trailing spaces
 			$attrSubSet[1] = trim($attrSubSet[1]);
 
-			// Strips unicode, hex, etc
-			$attrSubSet[1] = str_replace('&#', '', $attrSubSet[1]);
+			// Fully decode nested/double-encoded entities (CVE-2026-48905) so the value inspected by
+			// checkAttribute() below is the same value that ends up written to $newSet, and so any quotes/
+			// newlines hidden behind entity encoding (e.g. "&amp;#34;") are exposed to the stripping steps
+			// that follow instead of surviving, still-encoded, into the final HTML output.
+			$quoteStyle = version_compare(\PHP_VERSION, '5.4', '>=') ? \ENT_QUOTES | \ENT_HTML401 : \ENT_QUOTES;
+			$previous   = null;
+
+			for ($decodePass = 0; $decodePass < 5 && $previous !== $attrSubSet[1]; $decodePass++)
+			{
+				$previous      = $attrSubSet[1];
+				$attrSubSet[1] = html_entity_decode($attrSubSet[1], $quoteStyle, 'UTF-8');
+			}
 
 			// Strip normal newline within attr value
 			$attrSubSet[1] = preg_replace('/[\n\r]/', '', $attrSubSet[1]);

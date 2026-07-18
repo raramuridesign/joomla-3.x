@@ -82,6 +82,7 @@ class JoomlaInstallerScript
 
 		// This needs to stay for 2.5 update compatibility
 		$this->deleteUnexistingFiles();
+		$this->runDataMigrations();
 		$this->updateManifestCaches();
 		$this->updateDatabase();
 		$this->fixSchemas();
@@ -287,6 +288,87 @@ class JoomlaInstallerScript
 			}
 
 			break;
+		}
+	}
+
+	/**
+	 * Directly executes this distribution's own data-cleanup SQL migration files.
+	 *
+	 * JSchemaChangeset (used by fixSchemas() below) only recognises DDL statements —
+	 * `ALTER TABLE`/`CREATE TABLE` — when deciding whether a migration file has already
+	 * been applied (see Joomla\CMS\Schema\ChangeItem\MysqlChangeItem::buildCheckQuery()).
+	 * Any other statement type, including plain `UPDATE`/`DELETE` data-cleanup DML, is
+	 * left with checkStatus = -1 ("skipped"), and ChangeItem::fix() only ever executes a
+	 * query when checkStatus === -2 ("failed") — so a DML-only migration file such as
+	 * `3.12.0-2026-05-21.sql` (which removes the beez3/hathor rows) is silently never run
+	 * via fixSchemas() at all, on any site, even though fixSchemas() still marks the
+	 * schema version as up to date afterwards. Confirmed as the root cause of orphaned
+	 * beez3/hathor `#__extensions`/`#__template_styles` rows surviving the upgrade
+	 * (https://github.com/joomlaworks/joomla-3.x/issues/7) — and of the "uksort(): Argument
+	 * #1 ($array) must be of type array, false given" crash when Template Manager later
+	 * reads one of those rows: updateManifestCaches() (which runs after this method) tries
+	 * to refresh the manifest cache for the still-present row, finds the template files
+	 * already gone (removed by deleteUnexistingFiles()), and stores the literal string
+	 * "false" into manifest_cache as a side effect of `json_encode(false)`.
+	 *
+	 * Every statement in these files is written to be safely re-runnable (idempotent —
+	 * DELETEs on rows that no longer exist, UPDATEs guarded by EXISTS checks that become
+	 * false once already applied), so this always re-attempts them on every update rather
+	 * than tracking "already applied" state separately. Sites already stuck with orphaned
+	 * rows from before this fix existed self-heal on their next update.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.15.0
+	 */
+	protected function runDataMigrations()
+	{
+		$db = JFactory::getDbo();
+
+		$sqlFolder = $db->getServerType();
+
+		if ($sqlFolder === 'mssql')
+		{
+			$sqlFolder = 'sqlazure';
+		}
+
+		// Migration files that are plain data-cleanup DML, not schema DDL — add to this list
+		// whenever a future release ships a similar data-only migration file.
+		$dataMigrationFiles = array(
+			'3.12.0-2026-05-21.sql',
+		);
+
+		foreach ($dataMigrationFiles as $file)
+		{
+			$path = JPATH_ADMINISTRATOR . '/components/com_admin/sql/updates/' . $sqlFolder . '/' . $file;
+
+			if (!is_file($path))
+			{
+				continue;
+			}
+
+			$queries = JDatabaseDriver::splitSql(file_get_contents($path));
+
+			foreach ($queries as $query)
+			{
+				$query = trim($query);
+
+				if ($query === '')
+				{
+					continue;
+				}
+
+				try
+				{
+					$db->setQuery($query)->execute();
+				}
+				catch (RuntimeException $e)
+				{
+					// A single statement failing shouldn't block the rest of the update or the
+					// remaining migration files; log it the same way Installer::abort() does.
+					JLog::add($e->getMessage(), JLog::WARNING, 'jerror');
+				}
+			}
 		}
 	}
 
@@ -497,6 +579,15 @@ class JoomlaInstallerScript
 
 		foreach ($extensions as $extension)
 		{
+			// Extensions with state -1 are already flagged as "not currently installed" (e.g. a core
+			// extension the site admin has deliberately removed from disk). Installer::refreshManifestCache()
+			// would only abort with that same message again, surfaced as a misleading admin warning on every
+			// future update — skip these silently instead of re-reporting an already-known, intentional state.
+			if ((int) $extension->state === -1)
+			{
+				continue;
+			}
+
 			if (!$installer->refreshManifestCache($extension->extension_id))
 			{
 				echo JText::sprintf('FILES_JOOMLA_ERROR_MANIFEST', $extension->type, $extension->element, $extension->name, $extension->client_id) . '<br />';
@@ -2150,6 +2241,10 @@ class JoomlaInstallerScript
 			'/administrator/language/en-GB/en-GB.tpl_hathor.sys.ini',
 			'/language/en-GB/en-GB.tpl_beez3.ini',
 			'/language/en-GB/en-GB.tpl_beez3.sys.ini',
+
+			// Joomla 3.15.0
+			'/README.txt',
+			'/LICENSE.txt',
 		);
 
 		// TODO There is an issue while deleting folders using the ftp mode

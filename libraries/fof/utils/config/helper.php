@@ -86,4 +86,4 @@ class FOFUtilsConfigHelper
 			return $default;
 		}
 	}
-} 
+}

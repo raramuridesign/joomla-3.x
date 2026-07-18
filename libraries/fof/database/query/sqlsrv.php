@@ -365,10 +365,10 @@ class FOFDatabaseQuerySqlsrv extends FOFDatabaseQuery implements FOFDatabaseQuer
 	 * Return correct rand() function for MSSQL.
 	 *
 	 * Ensure that the rand() function is MSSQL compatible.
-	 * 
+	 *
 	 * Usage:
 	 * $query->Rand();
-	 * 
+	 *
 	 * @return  string  The correct rand function.
 	 *
 	 * @since   3.5

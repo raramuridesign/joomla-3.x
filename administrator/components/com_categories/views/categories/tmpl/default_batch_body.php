@@ -68,4 +68,3 @@ $extension = $this->escape($this->state->get('filter.extension'));
 		</div>
 	<?php endif; ?>
 </div>
-

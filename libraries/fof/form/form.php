@@ -519,7 +519,7 @@ class FOFForm extends JForm
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Method to remove a header from the form definition.
 	 *

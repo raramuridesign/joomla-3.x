@@ -13,23 +13,19 @@ defined('_JEXEC') or die;
  * -----------------
  * @var   array  $displayData  Array with all the given attributes for the image element.
  *                             Eg: src, class, alt, width, height, loading, decoding, style, data-*
- *                             Note: only the alt and src attributes are escaped by default!
+ *                             All attribute values are escaped before output (CVE-2026-48953).
  */
 
-if (isset($displayData['src']))
+if (isset($displayData['alt']) && $displayData['alt'] === false)
 {
-	$displayData['src'] = $this->escape($displayData['src']);
+	unset($displayData['alt']);
 }
 
-if (isset($displayData['alt']))
+foreach ($displayData as $attribute => $value)
 {
-	if ($displayData['alt'] === false)
+	if (!is_array($value))
 	{
-		unset($displayData['alt']);
-	}
-	else
-	{
-		$displayData['alt'] = $this->escape($displayData['alt']);
+		$displayData[$attribute] = $this->escape($value);
 	}
 }
 

@@ -13,6 +13,40 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 
 ## CHANGELOG
 
+## Version 3.15 - released July 18th, 2026
+Summary of changes:
+- Backported 13 CVEs from official Joomla security advisories, independently confirmed to also affect 3.x (several labelled "affects 4.0.0+ only" upstream, but the vulnerable code is present in 3.x regardless)
+- Resolved a number of functional/compatibility issues, some reported directly by the community
+
+**Security fixes (CVE backports), most to least severe:**
+- Local file inclusion (LFI) via the view layout parameter (CVE-2026-40383) — **High**
+- SQL injection in the com_tags "all tags" list ordering (CVE-2026-352212) — **Moderate, High impact**
+- Privilege-escalation XSS via language overrides, where a non-Super-User with delegated translation access could inject quote characters that break out of the many places Joomla renders language strings unescaped (CVE-2026-48954) — **Moderate**
+- XSS in the template manager's file/image/font editor, where a crafted (but filter-legal) request parameter could decode to a `<script>` tag on display — affecting three code paths in this codebase where the official fix only covered one (CVE-2026-48950) — **Moderate**
+- Unescaped attribute output in the generic image layout used by extensions (CVE-2026-48953) — **Moderate**
+- Reflected XSS in the com_installer update list view (CVE-2026-48952) — **Moderate**
+- Additional XSS gaps in com_associations left over from an earlier fix (CVE-2026-25901) — **Moderate**
+- Stored XSS in the content history preview screen (CVE-2026-30894) — **Moderate**
+- XSS in the feed modules, front and back end (CVE-2026-25900) — **Moderate**
+- XSS in article "read more" links via unescaped titles (CVE-2026-30895) — **Moderate**
+- Password/username reset links being sent over plain HTTP even on HTTPS-only sites (CVE-2026-48902) — **Low**
+- An instance-cache key bug in InputFilter that could serve a wrongly-configured filter instance (CVE-2026-48901) — **Low**
+- An access-control bypass allowing anyone to download restricted contacts' vCards in com_contact (CVE-2026-48948) — **Low**
+- Two further CVEs confirmed already covered by earlier hardening in this project, no new gap: CVE-2026-48905 and CVE-2026-48903 (both related to the core HTML attribute filter)
+- Two further CVEs confirmed not applicable, as the vulnerable code/feature doesn't exist in this version of Joomla: CVE-2026-48899 (sample data plugin permissions) and CVE-2026-48951 (a "modal return" screen XSS)
+
+**Functional & compatibility fixes:**
+- Fixed modules set to "Use Global" caching (mod_menu and 25 other core modules) silently ignoring Global Configuration's Cache Time in favour of their own separate Cache Time field — which, due to a hardcoded/reverting default, almost always meant a fixed 15-minute refresh regardless of what Global Configuration was actually set to; affected sites are fixed automatically on upgrade, no manual database changes needed
+- Added an explicit "Use custom cache time" caching option to all 26 cache-capable core modules (including mod_whosonline, which now also supports Global/custom caching for the first time), so overriding a single module's cache TTL is now a clear, self-documenting choice instead of an unlabelled number field
+- Fixed modules set to "Use custom cache time" never actually being cached on real page loads — the site's per-module page renderer only attempted caching for "Use Global", so the new option silently fell through to always rendering live
+- Added "sort by Author" to "Extensions > Manage", so third-party extensions can be easily distinguished from Joomla core ones when auditing a large site for vulnerable or old/unmaintained extensions
+- Fixed a misleading "Refresh Manifest Cache failed: X Extension is not currently installed" warning shown on every Joomla Update run, for any stock core extension (e.g. the protostar template, or com_banners/mod_banners) a site admin has deliberately removed
+- Fixed the removed beez3/hathor templates not actually being deleted from the database on upgrade from an earlier Joomla 3.x release, which left stale entries in Template Manager that threw a PHP error when opened (see [issue #7](https://github.com/joomlaworks/joomla-3.x/issues/7)) — affected sites will self-heal automatically on their next update, no manual fix needed
+- Fixed a PHP 8.4 deprecation warning from the session garbage-collection plugin's use of `lcg_value()` (see [issue #12](https://github.com/joomlaworks/joomla-3.x/issues/12))
+- Fixed literal `"_QQ_"` text appearing instead of quotation marks in various admin messages (e.g. the "Add Install from Web tab" notice) — a legacy language-file placeholder that was never being converted back to a real quote mark; fixed across all 80 affected language files
+- Raised the hardcoded minimum-PHP-version check from a stale `5.3.10` to `7.1.0` (the actual floor this codebase can run on), and lowered the update feed's own PHP requirement to match — sites on PHP 7.1–7.3 now keep receiving updates and security patches instead of being silently skipped or hitting an unhandled error page. PHP 7.4+ remains our recommended production baseline, both for broader hosting support (e.g. AlmaLinux 8 with cPanel, or Ubuntu 22.04+ with Ondřej's PHP repos) and for the best experience overall
+- Housekeeping: removed the stock, unedited `README.txt` (superseded by this file) and renamed `LICENSE.txt` to `LICENSE.md`; sites upgrading from an older release get the old files cleaned up automatically
+
 ## Version 3.14 - released July 4th, 2026
 Summary of changes:
 - Fixed two PHP 8.5 deprecations reported via PR #13: null array offsets in `HtmlDocument::getBuffer()`/`setBuffer()`, and the now-deprecated `imagedestroy()` call in `Image::destroy()` and `Backgroundfill::execute()` (supplemental to PR #13).
@@ -79,6 +113,8 @@ To install, just extract the latest rolling release https://github.com/joomlawor
 
 ## PHP COMPATIBILITY
 This distribution targets at least PHP 7.4. This is the baseline version we use for broader compatibility with hosts and the Joomla 3.x ecosystem (e.g. other extensions and templates that are actively maintained).
+
+Sites on PHP 7.1 through 7.3 will still be offered updates to this distribution through the Joomla Update component — 7.4 is our recommended baseline, not a hard cutoff, so those sites can keep receiving security patches even before upgrading their PHP version. PHP 7.0 and below is not supported; the update won't be offered and installing manually isn't recommended.
 
 **For end users:**
 If your site's server/webspace is configured with PHP 7.0 to 7.3, upgrading to PHP 7.4 is typically a safe switch. The same applies to sites on PHP 5.6, just make sure your extensions and templates are not holding you back.

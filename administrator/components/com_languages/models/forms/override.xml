@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
+<form addrulepath="administrator/components/com_languages/models/rules">
 	<fieldset>
 		<field
 			name="key"
@@ -18,7 +18,9 @@
 			description="COM_LANGUAGES_OVERRIDE_FIELD_OVERRIDE_DESC"
 			cols="50"
 			rows="5"
-			filter="LanguagesHelper::filterText" 
+			filter="LanguagesHelper::filterText"
+			validate="languageoverridequotes"
+			message="COM_LANGUAGES_ERROR_QUOTES_IN_TEXT"
 		/>
 
 		<field

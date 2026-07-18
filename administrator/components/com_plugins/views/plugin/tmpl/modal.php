@@ -26,4 +26,3 @@ JFactory::getDocument()->addScriptDeclaration('
 	<?php $this->setLayout('edit'); ?>
 	<?php echo $this->loadTemplate(); ?>
 </div>
-

@@ -51,6 +51,20 @@ class ContactViewContact extends JViewLegacy
 			return false;
 		}
 
+		// Check if access is not public (CVE-2026-48948) — the HTML view already enforces this;
+		// the vCard export bypassed it entirely, allowing anyone to download restricted contacts' vCards.
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$groups = $user->getAuthorisedViewLevels();
+
+		if ((!in_array($item->access, $groups)) || (!in_array($item->category_access, $groups)))
+		{
+			$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+			$app->setHeader('status', 403, true);
+
+			return false;
+		}
+
 		JFactory::getDocument()->setMimeEncoding('text/directory', true);
 
 		// Compute lastname, firstname and middlename

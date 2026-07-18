@@ -56,6 +56,7 @@
 					filter="integer"
 					>
 					<option value="1">JGLOBAL_USE_GLOBAL</option>
+					<option value="2">COM_MODULES_FIELD_VALUE_CUSTOM_CACHE_TIME</option>
 					<option value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
 				</field>
 
@@ -66,6 +67,7 @@
 					description="COM_MODULES_FIELD_CACHE_TIME_DESC"
 					default="900"
 					filter="integer"
+					showon="cache:2"
 				/>
 			</fieldset>
 		</fields>

@@ -64,7 +64,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<?php echo JText::_('JDATE'); ?>
 						</th>
 						<th width="15%" class="hidden-phone hidden-tablet">
-							<?php echo JText::_('JAUTHOR'); ?>
+							<?php echo JHtml::_('searchtools.sort', 'JAUTHOR', 'author', $listDirn, $listOrder); ?>
 						</th>
 						<th class="hidden-phone">
 							<?php echo JHtml::_('searchtools.sort', 'COM_INSTALLER_HEADING_FOLDER', 'folder_translated', $listDirn, $listOrder); ?>

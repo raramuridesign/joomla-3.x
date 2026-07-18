@@ -483,7 +483,7 @@
         		$select.attr('href', oldHref.replace(/&fieldid=(.+)&/, '&fieldid=' + inputId + '&'));
 				jMediaRefreshPreview(inputId);
         	});
-		
+
 		// fix media field in ISIS Template
 		$row.find('.field-media-wrapper').each(function(){
 			var $el = $(this);
@@ -534,4 +534,3 @@
 	})
 
 })(jQuery);
-

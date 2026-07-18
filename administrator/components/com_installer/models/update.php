@@ -358,7 +358,7 @@ class InstallerModelUpdate extends JModelList
 			$instance = JTable::getInstance('update');
 			$instance->load($uid);
 			$update->loadFromXml($instance->detailsurl, $minimumStability);
-			
+
 			// Find and use extra_query from update_site if available
 			$updateSiteInstance = JTable::getInstance('Updatesite');
 			$updateSiteInstance->load($instance->update_site_id);
