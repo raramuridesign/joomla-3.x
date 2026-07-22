@@ -3,7 +3,7 @@
  * @package     FrameworkOnFramework
  * @subpackage  database
  * @copyright   Copyright (C) 2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  *
  * This file is adapted from the Joomla! Platform. It is used to iterate a database cursor returning FOFTable objects
  * instead of plain stdClass objects
@@ -128,10 +128,10 @@ class FOFDatabaseQueryMysqli extends FOFDatabaseQuery implements FOFDatabaseQuer
 	 * Return correct rand() function for Mysql.
 	 *
 	 * Ensure that the rand() function is Mysql compatible.
-	 * 
+	 *
 	 * Usage:
 	 * $query->Rand();
-	 * 
+	 *
 	 * @return  string  The correct rand function.
 	 *
 	 * @since   3.5

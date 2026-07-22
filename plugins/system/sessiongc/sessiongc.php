@@ -4,7 +4,7 @@
  * @subpackage  System.sessiongc
  *
  * @copyright   (C) 2018 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -53,9 +53,7 @@ class PlgSystemSessionGc extends CMSPlugin
 			$probability = $this->params->get('gc_probability', 1);
 			$divisor     = $this->params->get('gc_divisor', 100);
 
-			$random = $divisor * lcg_value();
-
-			if ($probability > 0 && $random < $probability)
+			if ($probability > 0 && $divisor > 0 && random_int(1, $divisor) <= $probability)
 			{
 				$session->gc();
 			}
@@ -66,9 +64,7 @@ class PlgSystemSessionGc extends CMSPlugin
 			$probability = $this->params->get('gc_probability', 1);
 			$divisor     = $this->params->get('gc_divisor', 100);
 
-			$random = $divisor * lcg_value();
-
-			if ($probability > 0 && $random < $probability)
+			if ($probability > 0 && $divisor > 0 && random_int(1, $divisor) <= $probability)
 			{
 				$metadataManager = new MetadataManager($this->app, $this->db);
 				$metadataManager->deletePriorTo(time() - $session->getExpire());

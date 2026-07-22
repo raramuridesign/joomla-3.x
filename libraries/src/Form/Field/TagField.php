@@ -3,7 +3,7 @@
  * Joomla! Content Management System
  *
  * @copyright  (C) 2013 Open Source Matters, Inc. <https://www.joomla.org>
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
 namespace Joomla\CMS\Form\Field;
@@ -123,7 +123,7 @@ class TagField extends \JFormFieldList
 		$db    = Factory::getDbo();
 		$query = $db->getQuery(true)
 			->select('a.id AS value, a.path, a.title AS text, a.level, a.published, a.lft')
-			->from($db->qn('#__tags') . ' AS a');			
+			->from($db->qn('#__tags') . ' AS a');
 
 		// Limit Options in multilanguage
 		if ($app->isClient('site') && Multilanguage::isEnabled())

@@ -4,7 +4,7 @@
  * @subpackage  com_contact
  *
  * @copyright   (C) 2010 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -47,6 +47,20 @@ class ContactViewContact extends JViewLegacy
 		if (count($errors = $this->get('Errors')))
 		{
 			JError::raiseWarning(500, implode("\n", $errors));
+
+			return false;
+		}
+
+		// Check if access is not public (CVE-2026-48948) — the HTML view already enforces this;
+		// the vCard export bypassed it entirely, allowing anyone to download restricted contacts' vCards.
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$groups = $user->getAuthorisedViewLevels();
+
+		if ((!in_array($item->access, $groups)) || (!in_array($item->category_access, $groups)))
+		{
+			$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+			$app->setHeader('status', 403, true);
 
 			return false;
 		}

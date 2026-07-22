@@ -4,7 +4,7 @@
  * @subpackage  com_installer
  *
  * @copyright   (C) 2014 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -383,7 +383,7 @@ class InstallerModelUpdatesites extends InstallerModel
 		{
 			$app->enqueueMessage(JText::_('COM_INSTALLER_MSG_UPDATESITES_REBUILD_MESSAGE'), 'message');
 		}
-		
+
 		// Flush the system cache to ensure extra_query is correctly loaded next time.
 		$this->cleanCache('_system', 1);
 	}

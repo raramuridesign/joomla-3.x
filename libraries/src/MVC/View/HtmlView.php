@@ -3,7 +3,7 @@
  * Joomla! Content Management System
  *
  * @copyright  (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
 namespace Joomla\CMS\MVC\View;
@@ -561,8 +561,11 @@ class HtmlView extends \JObject
 			$temp = explode(':', $layout);
 			$this->_layout = $temp[1];
 
-			// Set layout template
-			$this->_layoutTemplate = $temp[0];
+			// Set layout template. $layout can originate from user-controlled request input (e.g. the
+			// controller's "layout" URL parameter), so restrict this to safe template-name characters —
+			// otherwise it is used unsanitized to build a template search path in loadTemplate(), which is
+			// then include()'d, allowing path traversal into a local file inclusion (CVE-2026-40383).
+			$this->_layoutTemplate = preg_replace('/[^A-Z0-9_\-]/i', '', $temp[0]);
 		}
 
 		return $previous;

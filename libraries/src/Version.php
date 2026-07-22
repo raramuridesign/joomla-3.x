@@ -3,7 +3,7 @@
  * Joomla! Content Management System
  *
  * @copyright  (C) 2005 Open Source Matters, Inc. <https://www.joomla.org>
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
 namespace Joomla\CMS;
@@ -41,7 +41,7 @@ final class Version
 	 * @var    integer
 	 * @since  3.8.0
 	 */
-	const MINOR_VERSION = 13;
+	const MINOR_VERSION = 15; // Updated for 3.15 release
 
 	/**
 	 * Patch release version.
@@ -69,7 +69,7 @@ final class Version
 	 * @since  3.5
 	 * @deprecated  4.0  Use separated version constants instead
 	 */
-	const RELEASE = '3.13';
+	const RELEASE = '3.15';
 
 	/**
 	 * Maintenance version.
@@ -111,7 +111,7 @@ final class Version
 	 * @var    string
 	 * @since  3.5
 	 */
-	const RELDATE = '31-May-2026';
+	const RELDATE = '18-July-2026';
 
 	/**
 	 * Release time.

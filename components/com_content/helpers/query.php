@@ -4,7 +4,7 @@
  * @subpackage  com_content
  *
  * @copyright   (C) 2007 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -240,7 +240,7 @@ class ContentHelperQuery
 	 * @return  array  Reordered array to achieve desired ordering down columns
 	 *
 	 * @since       1.6
-	 * @deprecated  4.0 
+	 * @deprecated  4.0
 	 */
 	public static function orderDownColumns(&$articles, $numColumns = 1)
 	{

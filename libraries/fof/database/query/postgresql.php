@@ -3,7 +3,7 @@
  * @package     FrameworkOnFramework
  * @subpackage  database
  * @copyright   Copyright (C) 2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  *
  * This file is adapted from the Joomla! Platform. It is used to iterate a database cursor returning FOFTable objects
  * instead of plain stdClass objects
@@ -646,10 +646,10 @@ class FOFDatabaseQueryPostgresql extends FOFDatabaseQuery implements FOFDatabase
 	 * Return correct rand() function for Postgresql.
 	 *
 	 * Ensure that the rand() function is Postgresql compatible.
-	 * 
+	 *
 	 * Usage:
 	 * $query->Rand();
-	 * 
+	 *
 	 * @return  string  The correct rand function.
 	 *
 	 * @since   3.5

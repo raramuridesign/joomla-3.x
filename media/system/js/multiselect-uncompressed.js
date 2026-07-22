@@ -1,25 +1,25 @@
 /**
  * @copyright   (C) 2013 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 /**
  * JavaScript behavior to allow shift select in administrator grids
  */
 (function($) {
-    
+
     Joomla = window.Joomla || {};
     var $boxes;
     Joomla.JMultiSelect = function(table) {
         var $last,
-        
+
         initialize = function(table) {
             $boxes = $('#' + table).find('input[type=checkbox]');
             $boxes.on('click', function(e) {
                 doselect(e)
             });
         },
-        
+
         doselect = function(e) {
             var $current = $(e.target), isChecked, lastIndex, currentIndex, swap;
             if (e.shiftKey && $last.length) {

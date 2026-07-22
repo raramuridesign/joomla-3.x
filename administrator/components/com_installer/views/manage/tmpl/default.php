@@ -4,7 +4,7 @@
  * @subpackage  com_installer
  *
  * @copyright   (C) 2008 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -64,7 +64,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<?php echo JText::_('JDATE'); ?>
 						</th>
 						<th width="15%" class="hidden-phone hidden-tablet">
-							<?php echo JText::_('JAUTHOR'); ?>
+							<?php echo JHtml::_('searchtools.sort', 'JAUTHOR', 'author', $listDirn, $listOrder); ?>
 						</th>
 						<th class="hidden-phone">
 							<?php echo JHtml::_('searchtools.sort', 'COM_INSTALLER_HEADING_FOLDER', 'folder_translated', $listDirn, $listOrder); ?>

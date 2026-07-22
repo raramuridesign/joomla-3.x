@@ -4,7 +4,7 @@
  * @subpackage  HTML
  *
  * @copyright   (C) 2009 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('JPATH_PLATFORM') or die;
@@ -56,7 +56,7 @@ abstract class JHtmlContent
 	{
 		$model = JModelLegacy::getInstance('Articles', 'ContentModel', array('ignore_request' => true));
 
-		foreach ($state as $key => $value) 
+		foreach ($state as $key => $value)
 		{
 			$model->setState($key, $value);
 		}

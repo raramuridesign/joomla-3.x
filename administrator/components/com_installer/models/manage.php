@@ -4,7 +4,7 @@
  * @subpackage  com_installer
  *
  * @copyright   (C) 2008 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -39,6 +39,7 @@ class InstallerModelManage extends InstallerModel
 				'folder', 'folder_translated',
 				'package_id',
 				'extension_id',
+				'author',
 			);
 		}
 
@@ -138,7 +139,7 @@ class InstallerModelManage extends InstallerModel
 			{
 				$table->enabled = $value;
 			}
-		
+
 			$context = $this->option . '.' . $this->name;
 			JPluginHelper::importPlugin('extension');
 			JEventDispatcher::getInstance()->trigger('onExtensionChangeState', array($context, $eid, $value));

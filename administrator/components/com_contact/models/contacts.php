@@ -4,7 +4,7 @@
  * @subpackage  com_contact
  *
  * @copyright   (C) 2008 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -306,7 +306,7 @@ class ContactModelContacts extends JModelList
 			$categoryId = ArrayHelper::toInteger($categoryId);
 			$categoryTable = JTable::getInstance('Category', 'JTable');
 			$subCatItemsWhere = array();
-		
+
 			foreach ($categoryId as $filter_catid)
 			{
 				$categoryTable->load($filter_catid);
@@ -315,7 +315,7 @@ class ContactModelContacts extends JModelList
 					'c.lft >= ' . (int) $categoryTable->lft . ' AND ' .
 					'c.rgt <= ' . (int) $categoryTable->rgt . ')';
 			}
-		
+
 			$query->where('(' . implode(' OR ', $subCatItemsWhere) . ')');
 		}
 

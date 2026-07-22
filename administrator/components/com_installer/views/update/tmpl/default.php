@@ -4,7 +4,7 @@
  * @subpackage  com_installer
  *
  * @copyright   (C) 2008 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -99,29 +99,29 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 									</label>
 								</td>
 								<td class="center">
-									<?php echo $item->client_translated; ?>
+									<?php echo $this->escape($item->client_translated); ?>
 								</td>
 								<td class="center">
-									<?php echo $item->type_translated; ?>
+									<?php echo $this->escape($item->type_translated); ?>
 								</td>
 								<td class="hidden-phone center">
-									<span class="label label-warning"><?php echo $item->current_version; ?></span>
+									<span class="label label-warning"><?php echo $this->escape($item->current_version); ?></span>
 								</td>
 								<td class="center">
-									<span class="label label-success"><?php echo $item->version; ?></span>
+									<span class="label label-success"><?php echo $this->escape($item->version); ?></span>
 								</td>
 								<td class="hidden-phone center">
-									<?php echo $item->folder_translated; ?>
+									<?php echo $this->escape($item->folder_translated); ?>
 								</td>
 								<td class="hidden-phone center">
-									<?php echo $item->install_type; ?>
+									<?php echo $this->escape($item->install_type); ?>
 								</td>
 								<td class="hidden-phone hidden-tablet">
 							<span class="break-word">
-							<?php echo $item->detailsurl; ?>
+							<?php echo $this->escape($item->detailsurl); ?>
 								<?php if (isset($item->infourl)) : ?>
 									<br />
-									<a href="<?php echo $item->infourl; ?>" target="_blank" rel="noopener noreferrer"><?php echo $this->escape($item->infourl); ?></a>
+									<a href="<?php echo $this->escape($item->infourl); ?>" target="_blank" rel="noopener noreferrer"><?php echo $this->escape($item->infourl); ?></a>
 								<?php endif; ?>
 							</span>
 								</td>

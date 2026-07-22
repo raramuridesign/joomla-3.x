@@ -4,7 +4,7 @@
  * @subpackage  com_privacy
  *
  * @copyright   (C) 2018 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -30,7 +30,7 @@ class PrivacyModelConsents extends JModelList
 		if (empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array(
-				'id', 'a.id', 
+				'id', 'a.id',
 				'user_id', 'a.user_id',
 				'subject', 'a.subject',
 				'created', 'a.created',

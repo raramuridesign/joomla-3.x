@@ -4,7 +4,7 @@
  * @subpackage  com_installer
  *
  * @copyright   (C) 2008 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -358,7 +358,7 @@ class InstallerModelUpdate extends JModelList
 			$instance = JTable::getInstance('update');
 			$instance->load($uid);
 			$update->loadFromXml($instance->detailsurl, $minimumStability);
-			
+
 			// Find and use extra_query from update_site if available
 			$updateSiteInstance = JTable::getInstance('Updatesite');
 			$updateSiteInstance->load($instance->update_site_id);

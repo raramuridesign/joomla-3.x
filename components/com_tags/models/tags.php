@@ -4,7 +4,7 @@
  * @subpackage  com_tags
  *
  * @copyright   (C) 2013 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -90,6 +90,7 @@ class TagsModelTags extends JModelList
 		$orderby        = $this->state->params->get('all_tags_orderby', 'title');
 		$published      = $this->state->params->get('published', 1);
 		$orderDirection = $this->state->params->get('all_tags_orderby_direction', 'ASC');
+		$orderDirection = in_array(strtoupper($orderDirection), array('ASC', 'DESC')) ? $orderDirection : 'ASC';
 		$language       = $this->getState('tag.language');
 
 		// Create a new query object.

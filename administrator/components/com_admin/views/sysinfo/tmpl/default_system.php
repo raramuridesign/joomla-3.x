@@ -4,7 +4,7 @@
  * @subpackage  com_admin
  *
  * @copyright   (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -43,7 +43,7 @@ defined('_JEXEC') or die;
 				<td>
 					<?php echo $this->info['dbserver']; ?>
 				</td>
-			</tr>			
+			</tr>
 			<tr>
 				<td>
 					<strong><?php echo JText::_('COM_ADMIN_DATABASE_VERSION'); ?></strong>

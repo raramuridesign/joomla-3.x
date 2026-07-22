@@ -3,7 +3,7 @@
  * @package    FrameworkOnFramework
  * @subpackage encrypt
  * @copyright   Copyright (C) 2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
  * @note	This file has been modified by the Joomla! Project and no longer reflects the original work of its author.
  */
 // Protect from unauthorized access
@@ -31,7 +31,7 @@ class FOFEncryptAes
 	 * @var  FOFEncryptAesInterface
 	 */
 	protected $adapter;
-	
+
 	/**
 	 * Initialise the AES encryption object.
 	 *
@@ -49,7 +49,7 @@ class FOFEncryptAes
 		if ($priority == 'openssl')
 		{
 			$this->adapter = new FOFEncryptAesOpenssl();
-			
+
 			if (!$this->adapter->isSupported($phpfunc))
 			{
 				$this->adapter = new FOFEncryptAesMcrypt();
@@ -58,7 +58,7 @@ class FOFEncryptAes
 		else
 		{
 			$this->adapter = new FOFEncryptAesMcrypt();
-			
+
 			if (!$this->adapter->isSupported($phpfunc))
 			{
 				$this->adapter = new FOFEncryptAesOpenssl();

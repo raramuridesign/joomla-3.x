@@ -3,7 +3,7 @@
  * Joomla! Content Management System
  *
  * @copyright  (C) 2015 Open Source Matters, Inc. <https://www.joomla.org>
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
 namespace Joomla\CMS\Document\Renderer\Html;
@@ -83,7 +83,13 @@ class ModuleRenderer extends DocumentRenderer
 		// Default for compatibility purposes. Set cachemode parameter or use JModuleHelper::moduleCache from within the module instead
 		$cachemode = $params->get('cachemode', 'oldstatic');
 
-		if ($params->get('cache', 0) == 1 && \JFactory::getConfig()->get('caching') >= 1 && $cachemode != 'id' && $cachemode != 'safeuri')
+		// Any explicit caching mode (1 = Use Global, 2 = Use custom cache time, ...) should enable
+		// caching here - only a literal 0/'0' (No caching) opts out. Kept as a strict equality check,
+		// matching the same idiom ModuleHelper::moduleCache() uses for its own $cacheDisabled flag.
+		$cacheState = $params->get('cache', 0);
+		$cacheEnabled = !($cacheState === 0 || $cacheState === '0');
+
+		if ($cacheEnabled && \JFactory::getConfig()->get('caching') >= 1 && $cachemode != 'id' && $cachemode != 'safeuri')
 		{
 			// Default to itemid creating method and workarounds on
 			$cacheparams = new \stdClass;

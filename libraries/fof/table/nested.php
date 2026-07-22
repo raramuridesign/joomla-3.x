@@ -3,7 +3,7 @@
  * @package     FrameworkOnFramework
  * @subpackage  table
  * @copyright   Copyright (C) 2010-2016 Nicholas K. Dionysopoulos / Akeeba Ltd. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 // Protect from unauthorized access
@@ -265,9 +265,9 @@ class FOFTableNested extends FOFTable
 	/**
 	 * Makes a copy of the record, inserting it as the last child of the given node's parent.
 	 *
-	 * @param   integer|array  $cid  The primary key value (or values) or the record(s) to copy. 
+	 * @param   integer|array  $cid  The primary key value (or values) or the record(s) to copy.
 	 *                               If null, the current record will be copied
-	 * 
+	 *
 	 * @return self|FOFTableNested	 The last copied node
 	 */
 	public function copy($cid = null)
@@ -291,7 +291,7 @@ class FOFTableNested extends FOFTable
 			{
 				// Even if it's null, let's still create the record
 				$this->create($this->getData());
-				
+
 				return $this;
 			}
 		}
@@ -306,7 +306,7 @@ class FOFTableNested extends FOFTable
 			}
 
 			$this->load($item);
-			
+
 			$this->create($this->getData());
 		}
 

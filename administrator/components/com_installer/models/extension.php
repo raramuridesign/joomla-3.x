@@ -4,7 +4,7 @@
  * @subpackage  com_installer
  *
  * @copyright   (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -64,7 +64,9 @@ class InstallerModel extends JModelList
 		$db     = $this->getDbo();
 
 		// Define which fields have to be processed in a custom way because of translation.
-		$customOrderFields = array('name', 'client_translated', 'type_translated', 'folder_translated');
+		// 'author' isn't translated, but like the others it's only populated after translate()
+		// decodes manifest_cache per row, so it can't be an SQL ORDER BY column either.
+		$customOrderFields = array('name', 'client_translated', 'type_translated', 'folder_translated', 'author');
 
 		// Process searching, ordering and pagination for fields that need to be translated.
 		if (in_array($listOrder, $customOrderFields) || (!empty($search) && stripos($search, 'id:') !== 0))
@@ -161,6 +163,8 @@ class InstallerModel extends JModelList
 				}
 			}
 
+			// Not every manifest_cache blob includes an author field; normalize so sorting by it is well-defined.
+			$item->author            = isset($item->author) ? (string) $item->author : '';
 			$item->author_info       = @$item->authorEmail . '<br />' . @$item->authorUrl;
 			$item->client            = $item->client_id ? JText::_('JADMINISTRATOR') : JText::_('JSITE');
 			$item->client_translated = $item->client;

@@ -4,7 +4,7 @@
  * @subpackage  mod_articles_category
  *
  * @copyright   (C) 2010 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
@@ -67,15 +67,15 @@ defined('_JEXEC') or die;
 										<?php echo JText::_('MOD_ARTICLES_CATEGORY_REGISTER_TO_READ_MORE'); ?>
 									<?php elseif ($readmore = $item->alternative_readmore) : ?>
 										<?php echo $readmore; ?>
-										<?php echo JHtml::_('string.truncate', $item->title, $params->get('readmore_limit')); ?>
+										<?php echo JHtml::_('string.truncate', $item->title, $params->get('readmore_limit'), true, false); ?>
 											<?php if ($params->get('show_readmore_title', 0) != 0) : ?>
-												<?php echo JHtml::_('string.truncate', $item->title, $params->get('readmore_limit')); ?>
+												<?php echo JHtml::_('string.truncate', $item->title, $params->get('readmore_limit'), true, false); ?>
 											<?php endif; ?>
 									<?php elseif ($params->get('show_readmore_title', 0) == 0) : ?>
 										<?php echo JText::sprintf('MOD_ARTICLES_CATEGORY_READ_MORE_TITLE'); ?>
 									<?php else : ?>
 										<?php echo JText::_('MOD_ARTICLES_CATEGORY_READ_MORE'); ?>
-										<?php echo JHtml::_('string.truncate', $item->title, $params->get('readmore_limit')); ?>
+										<?php echo JHtml::_('string.truncate', $item->title, $params->get('readmore_limit'), true, false); ?>
 									<?php endif; ?>
 								</a>
 							</p>
@@ -137,12 +137,12 @@ defined('_JEXEC') or die;
 								<?php echo JText::_('MOD_ARTICLES_CATEGORY_REGISTER_TO_READ_MORE'); ?>
 							<?php elseif ($readmore = $item->alternative_readmore) : ?>
 								<?php echo $readmore; ?>
-								<?php echo JHtml::_('string.truncate', $item->title, $params->get('readmore_limit')); ?>
+								<?php echo JHtml::_('string.truncate', $item->title, $params->get('readmore_limit'), true, false); ?>
 							<?php elseif ($params->get('show_readmore_title', 0) == 0) : ?>
 								<?php echo JText::sprintf('MOD_ARTICLES_CATEGORY_READ_MORE_TITLE'); ?>
 							<?php else : ?>
 								<?php echo JText::_('MOD_ARTICLES_CATEGORY_READ_MORE'); ?>
-								<?php echo JHtml::_('string.truncate', $item->title, $params->get('readmore_limit')); ?>
+								<?php echo JHtml::_('string.truncate', $item->title, $params->get('readmore_limit'), true, false); ?>
 							<?php endif; ?>
 						</a>
 					</p>
